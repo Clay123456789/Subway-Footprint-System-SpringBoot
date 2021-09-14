@@ -1,6 +1,4 @@
 package com.subway_footprint_system.springboot_project;
-
-import com.subway_footprint_system.springboot_project.controller.MainController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -8,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SpringbootProjectApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MainController.class, args);
+        SpringApplication.run(SpringbootProjectApplication.class, args);
     }
 
 }
