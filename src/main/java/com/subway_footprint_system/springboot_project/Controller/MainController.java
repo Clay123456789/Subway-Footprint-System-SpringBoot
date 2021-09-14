@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
+
 @EnableAutoConfiguration
 @RestController
 public class MainController {
