@@ -37,7 +37,7 @@ public class StationDaoImpl implements IStationDao {
                 station.getSID(),station.getSName(),station.getLongitude(),station.getLatitude(),station.getRoute());
         if(result>0){
             // 判断是否缓存存在
-            String key = "station_List";
+            String key = "Station_List";
             Boolean hasKey = redisTemplate.hasKey(key);
             // 缓存存在，进行删除
             if (hasKey) {
@@ -60,7 +60,7 @@ public class StationDaoImpl implements IStationDao {
         int  result=   jdbcTemplate.update("delete from Station where SID = ?",station.getSID());
         if(result!=0){
             // 判断是否缓存存在
-            String key = "station_" + station.getSID();
+            String key = "Station_" + station.getSID();
             Boolean hasKey = redisTemplate.hasKey(key);
             // 缓存存在，进行删除
             if (hasKey) {
@@ -81,11 +81,11 @@ public class StationDaoImpl implements IStationDao {
     public boolean update(Station station) {
 
         //返回影响行数，为1表示修改成功
-        int result= jdbcTemplate.update("insert into Station(SID,SName,Longitude,Latitude,Route) values(?,?,?,?,?)",
-                station.getSID(),station.getSName(),station.getLongitude(),station.getLatitude(),station.getRoute());
+        int result = jdbcTemplate.update("update Station set SName=?,Longitude=?,Latitude=?,Route=? where SID=?"
+                ,station.getSName(),station.getLongitude(),station.getLatitude(),station.getRoute(),station.getSID());
         if(result > 0){
             // 判断是否缓存存在
-            String key = "station_" + station.getSID();
+            String key = "Station_" + station.getSID();
             Boolean hasKey = redisTemplate.hasKey(key);
             // 缓存存在，进行删除
             if (hasKey) {
@@ -107,7 +107,7 @@ public class StationDaoImpl implements IStationDao {
     public Station select(Station station) {
 
         // 从缓存中 取出学生信息
-        String key = "station_" + station.getSID();
+        String key = "Station_" + station.getSID();
         Boolean hasKey = redisTemplate.hasKey(key);
 
         ValueOperations operations = redisTemplate.opsForValue();
@@ -138,7 +138,7 @@ public class StationDaoImpl implements IStationDao {
 
     @Override
     public List<Station> selectAll(Station station) {
-        String key = "station_List";
+        String key = "Station_List";
         Boolean hasKey = redisTemplate.hasKey(key);
 
         ValueOperations operations = redisTemplate.opsForValue();

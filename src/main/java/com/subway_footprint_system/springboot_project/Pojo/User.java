@@ -5,16 +5,16 @@ public class User {
 
     private String UID;//User ID
     private String Account;//账号
-    private String password;//密码
+    private String Password;//密码
     private String StationTable;//存储点亮的地铁站的表名称
 
     public User() {
     }
 
-    public User(String UID,String Account, String password,String StationTable) {
+    public User(String UID,String Account, String Password,String StationTable) {
         this.UID = UID;
         this.Account = Account;
-        this.password = password;
+        this.Password = Password;
         this.StationTable=StationTable;
     }
     public String getUID() {
@@ -33,11 +33,11 @@ public class User {
     }
 
     public String getPassword() {
-        return password;
+        return Password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String Password) {
+        this.Password = Password;
     }
 
     public String getStationTable() {
@@ -53,7 +53,7 @@ public class User {
         return "User{" +
                 "UID='" + UID + '\'' +
                 ", Account='" + Account + '\'' +
-                ", password='" + password + '\'' +
+                ", password='" + Password + '\'' +
                 ", StationTable='" + StationTable + '\'' +
                 '}';
     }
