@@ -1,70 +1,71 @@
 package com.subway_footprint_system.springboot_project.Pojo;
 
 public class Station {
-    private String SID;//Station ID
-    private String SName;//地铁站名称（中文名）(32个汉字)
-    private float Longitude;//经度(默认东经)
-    private float Latitude;//纬度（默认北纬）
-    private String Route;//从属路线名字（中文名）
+    private String sid;//Station ID
+    private String sname;//地铁站名称（中文名）(32个汉字)
+    private float longitude;//经度(默认东经)
+    private float latitude;//纬度（默认北纬）
+    private String route;//从属路线名字（中文名）
 
     public Station() {
     }
-    public Station(String SID, String SName, float Longitude, float Latitude, String route) {
-        this.SID = SID;
-        this.SName = SName;
-        this.Longitude = Longitude;
-        this.Latitude = Latitude;
-        Route = route;
+
+    public Station(String sid, String sname, float longitude, float latitude, String route) {
+        this.sid = sid;
+        this.sname = sname;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.route = route;
     }
 
-    public String getSID() {
-        return SID;
+    public String getSid() {
+        return sid;
     }
 
-    public void setSID(String SID) {
-        this.SID = SID;
+    public void setSid(String sid) {
+        this.sid = sid;
     }
 
-    public String getSName() {
-        return SName;
+    public String getSname() {
+        return sname;
     }
 
-    public void setSName(String SName) {
-        this.SName = SName;
+    public void setSname(String sname) {
+        this.sname = sname;
     }
 
     public float getLongitude() {
-        return Longitude;
+        return longitude;
     }
 
-    public void setLongitude(float Longitude) {
-        this.Longitude = Longitude;
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
     }
 
     public float getLatitude() {
-        return Latitude;
+        return latitude;
     }
 
-    public void setLatitude(float Latitude) {
-        this.Latitude = Latitude;
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
     }
 
     public String getRoute() {
-        return Route;
+        return route;
     }
 
     public void setRoute(String route) {
-        Route = route;
+        this.route = route;
     }
 
     @Override
     public String toString() {
         return "Station{" +
-                "SID='" + SID + '\'' +
-                ", SName='" + SName + '\'' +
-                ", Longitude='" + Longitude + '\'' +
-                ", Latitude='" + Latitude + '\'' +
-                ", Route='" + Route + '\'' +
+                "sid='" + sid + '\'' +
+                ", sname='" + sname + '\'' +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", route='" + route + '\'' +
                 '}';
     }
 }

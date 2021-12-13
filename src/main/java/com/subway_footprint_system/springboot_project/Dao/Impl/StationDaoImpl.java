@@ -33,11 +33,11 @@ public class StationDaoImpl implements IStationDao {
     @Override
     public boolean insert(Station station) {
         //返回影响行数，为1即增加成功
-        int result= jdbcTemplate.update("insert into Station(SID,SName,Longitude,Latitude,Route) values(?,?,?,?,?)",
-                station.getSID(),station.getSName(),station.getLongitude(),station.getLatitude(),station.getRoute());
+        int result= jdbcTemplate.update("insert into station(sid,sname,longitude,latitude,route) values(?,?,?,?,?)",
+                station.getSid(),station.getSname(),station.getLongitude(),station.getLatitude(),station.getRoute());
         if(result>0){
             // 判断是否缓存存在
-            String key = "Station_List";
+            String key = "station_list";
             Boolean hasKey = redisTemplate.hasKey(key);
             // 缓存存在，进行删除
             if (hasKey) {
@@ -57,10 +57,10 @@ public class StationDaoImpl implements IStationDao {
      */
     @Override
     public boolean delete(Station station) {
-        int  result=   jdbcTemplate.update("delete from Station where SID = ?",station.getSID());
+        int  result=   jdbcTemplate.update("delete from station where sid = ?",station.getSid());
         if(result!=0){
             // 判断是否缓存存在
-            String key = "Station_" + station.getSID();
+            String key = "station_" + station.getSid();
             Boolean hasKey = redisTemplate.hasKey(key);
             // 缓存存在，进行删除
             if (hasKey) {
@@ -81,11 +81,11 @@ public class StationDaoImpl implements IStationDao {
     public boolean update(Station station) {
 
         //返回影响行数，为1表示修改成功
-        int result = jdbcTemplate.update("update Station set SName=?,Longitude=?,Latitude=?,Route=? where SID=?"
-                ,station.getSName(),station.getLongitude(),station.getLatitude(),station.getRoute(),station.getSID());
+        int result = jdbcTemplate.update("update station set sname=?,longitude=?,latitude=?,route=? where sid=?"
+                ,station.getSname(),station.getLongitude(),station.getLatitude(),station.getRoute(),station.getSid());
         if(result > 0){
             // 判断是否缓存存在
-            String key = "Station_" + station.getSID();
+            String key = "station_" + station.getSid();
             Boolean hasKey = redisTemplate.hasKey(key);
             // 缓存存在，进行删除
             if (hasKey) {
@@ -107,7 +107,7 @@ public class StationDaoImpl implements IStationDao {
     public Station select(Station station) {
 
         // 从缓存中 取出学生信息
-        String key = "Station_" + station.getSID();
+        String key = "station_" + station.getSid();
         Boolean hasKey = redisTemplate.hasKey(key);
 
         ValueOperations operations = redisTemplate.opsForValue();
@@ -122,7 +122,7 @@ public class StationDaoImpl implements IStationDao {
         //queryForObject会抛出非检查性异常DataAccessException，同时对返回值进行requiredSingleResult操作
         //requiredSingleResult会在查询结果为空的时候抛出EmptyResultDataAccessException异常，需要捕获后进行处理
         try {
-            object = jdbcTemplate.queryForObject("select * from Station where SID = ?",rowMapper,station.getSID());
+            object = jdbcTemplate.queryForObject("select * from station where sid = ?",rowMapper,station.getSid());
         } catch (EmptyResultDataAccessException e1) {
             //查询结果为空，返回null
             return null;
@@ -138,7 +138,7 @@ public class StationDaoImpl implements IStationDao {
 
     @Override
     public List<Station> selectAll(Station station) {
-        String key = "Station_List";
+        String key = "station_list";
         Boolean hasKey = redisTemplate.hasKey(key);
 
         ValueOperations operations = redisTemplate.opsForValue();
@@ -152,10 +152,10 @@ public class StationDaoImpl implements IStationDao {
         }
         //缓存中不存在
         RowMapper<Station> rowMapper = new BeanPropertyRowMapper<Station>(Station.class);
-        List<Station> list = jdbcTemplate.query("select * from Station order by SID DESC ",rowMapper);
+        List<Station> list = jdbcTemplate.query("select * from station order by sid DESC ",rowMapper);
         String toJson = new Gson().toJson(list);
         // 加到缓存中
-        operations.set(key, toJson, 10, TimeUnit.SECONDS);
+        operations.set(key, toJson, 10*60, TimeUnit.SECONDS);
         return list;
     }
 }

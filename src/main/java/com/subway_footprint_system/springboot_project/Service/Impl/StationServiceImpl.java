@@ -4,12 +4,15 @@ import com.subway_footprint_system.springboot_project.Dao.Impl.StationDaoImpl;
 import com.subway_footprint_system.springboot_project.Pojo.Station;
 import com.subway_footprint_system.springboot_project.Service.IStationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public class StationImpl implements IStationService {
+@Service
+public class StationServiceImpl implements IStationService {
     @Autowired
     private StationDaoImpl stationDao;
+
     @Override
     public boolean insert(Station station) {
 
@@ -35,4 +38,13 @@ public class StationImpl implements IStationService {
     public List<Station> selectAll(Station station) {
         return stationDao.selectAll(station);
     }
+
+    @Override
+    public boolean uploadAllStations() {
+
+
+        return false;
+    }
+
+
 }

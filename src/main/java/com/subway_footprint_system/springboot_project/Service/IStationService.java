@@ -13,5 +13,6 @@ public interface IStationService {
     List<Station> selectAll(Station station);
 
     //其他业务逻辑
-
+    //上传所有地铁站点信息，数据来源：百度
+    boolean uploadAllStations();
 }

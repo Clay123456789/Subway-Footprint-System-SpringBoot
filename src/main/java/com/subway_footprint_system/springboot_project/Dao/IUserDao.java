@@ -6,9 +6,11 @@ import java.util.List;
 
 public interface IUserDao {
     //增删改查方法
-    boolean insert(User user);
-    boolean delete(User user);
-    boolean update(User user);
-    User select(User user);
-    List<User> selectAll(User user);
+    boolean insertUser(User user);
+    boolean deleteUser(String uid);
+    boolean updateUser(User user);
+    User getUserByUid(String uid);
+    User getUserByEmail(String email);
+    User getUserByUsername(String username);
+    List<User> getAllUsers();
 }
