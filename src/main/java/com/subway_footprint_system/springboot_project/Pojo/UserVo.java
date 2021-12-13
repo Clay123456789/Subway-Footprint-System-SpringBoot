@@ -1,8 +1,6 @@
 package com.subway_footprint_system.springboot_project.Pojo;
 
-public class User {
-
-
+public class UserVo {
     private String uid;//User ID
     private String username;
     private String password;
@@ -14,22 +12,22 @@ public class User {
     private String touxiang;
     private String qianming;
     private String stationtable;//存储点亮的地铁站的表名称
-    public User() {
-    }
-    public User(String email) {
-        this.email = email;
-    }
-    public User(String uid, String username, String password, String email, int age, String sex, String tel, String touxiang, String qianming, String stationtable) {
-        this.uid = uid;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.age = age;
-        this.sex = sex;
-        this.tel = tel;
-        this.touxiang = touxiang;
-        this.qianming = qianming;
-        this.stationtable = stationtable;
+
+    //    验证码
+    private String code;
+
+    //更改后的新信息
+    private String newUsername;
+    private String newEmail;
+    private String newTel;
+    private String newPassword;
+    private String newTouxiang;
+    private String newQianming;
+    private int newAge;
+    private String newSex;
+
+    public UserVo() {
+
     }
 
     public String getUid() {
@@ -111,4 +109,78 @@ public class User {
     public void setStationtable(String stationtable) {
         this.stationtable = stationtable;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getNewUsername() {
+        return newUsername;
+    }
+
+    public void setNewUsername(String newUsername) {
+        this.newUsername = newUsername;
+    }
+
+    public String getNewEmail() {
+        return newEmail;
+    }
+
+    public void setNewEmail(String newEmail) {
+        this.newEmail = newEmail;
+    }
+
+    public String getNewTel() {
+        return newTel;
+    }
+
+    public void setNewTel(String newTel) {
+        this.newTel = newTel;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public String getNewTouxiang() {
+        return newTouxiang;
+    }
+
+    public void setNewTouxiang(String newTouxiang) {
+        this.newTouxiang = newTouxiang;
+    }
+
+    public String getNewQianming() {
+        return newQianming;
+    }
+
+    public void setNewQianming(String newQianming) {
+        this.newQianming = newQianming;
+    }
+
+    public int getNewAge() {
+        return newAge;
+    }
+
+    public void setNewAge(int newAge) {
+        this.newAge = newAge;
+    }
+
+    public String getNewSex() {
+        return newSex;
+    }
+
+    public void setNewSex(String newSex) {
+        this.newSex = newSex;
+    }
+
+
 }
