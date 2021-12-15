@@ -4,10 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import com.subway_footprint_system.springboot_project.Dao.ISubwayDao;
 import com.subway_footprint_system.springboot_project.Pojo.Subway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,20 +68,36 @@ public class SubwayDaoImpl implements ISubwayDao {
      */
     @Override
     public boolean deleteSubway(String sid) {
-        int  result=   jdbcTemplate.update("delete from subway where sid = ?",sid);
-        if(result!=0){
-            // 判断是否缓存存在
-            String key = "subway_" +sid;
-            Boolean hasKey = redisTemplate.hasKey(key);
-            // 缓存存在，进行删除
-            if (hasKey) {
-                redisTemplate.delete(key);
-            }
-            return true;
-        }
-        else{
-            return false;
-        }
+       Subway subway= getSubway(sid);
+       if(subway!=null){
+           int  result=   jdbcTemplate.update("delete from subway where sid = ?",sid);
+           if(result!=0){
+               // 判断是否缓存存在
+               String key = "subway_" + subway.getSid();
+               String key1 = "subway_list";
+               String key2 = "subway_"+subway.getCode();
+               Boolean hasKey = redisTemplate.hasKey(key);
+               // 缓存存在，进行删除
+               if (hasKey) {
+                   redisTemplate.delete(key);
+               }
+               Boolean hasKey1 = redisTemplate.hasKey(key1);
+               // 缓存存在，进行删除
+               if (hasKey1) {
+                   redisTemplate.delete(key1);
+               }
+               Boolean hasKey2 = redisTemplate.hasKey(key2);
+               // 缓存存在，进行删除
+               if (hasKey2) {
+                   redisTemplate.delete(key2);
+               }
+               return true;
+           }
+           else{
+               return false;
+           }
+       }
+        return false;
     }
 
 
@@ -101,10 +113,22 @@ public class SubwayDaoImpl implements ISubwayDao {
         if(result > 0){
             // 判断是否缓存存在
             String key = "subway_" + subway.getSid();
+            String key1 = "subway_list";
+            String key2 = "subway_"+subway.getCode();
             Boolean hasKey = redisTemplate.hasKey(key);
             // 缓存存在，进行删除
             if (hasKey) {
                 redisTemplate.delete(key);
+            }
+            Boolean hasKey1 = redisTemplate.hasKey(key1);
+            // 缓存存在，进行删除
+            if (hasKey1) {
+                redisTemplate.delete(key1);
+            }
+            Boolean hasKey2 = redisTemplate.hasKey(key2);
+            // 缓存存在，进行删除
+            if (hasKey2) {
+                redisTemplate.delete(key2);
             }
             return true;
         }
@@ -119,7 +143,7 @@ public class SubwayDaoImpl implements ISubwayDao {
      */
     @Override
     public Subway getSubway(String sid) {
-        // 从缓存中 取出学生信息
+        // 从缓存中 取出信息
         String key = "subway_" + sid;
         Boolean hasKey = redisTemplate.hasKey(key);
 
@@ -130,17 +154,14 @@ public class SubwayDaoImpl implements ISubwayDao {
             return new Gson().fromJson(str, Subway.class);
         }
         //缓存中不存在
-        RowMapper<Subway> rowMapper = new BeanPropertyRowMapper<Subway>(Subway.class);
-        Object object = null;
-        //queryForObject会抛出非检查性异常DataAccessException，同时对返回值进行requiredSingleResult操作
-        //requiredSingleResult会在查询结果为空的时候抛出EmptyResultDataAccessException异常，需要捕获后进行处理
-        try {
-            object = jdbcTemplate.queryForObject("select * from subway where sid = ?",rowMapper,sid);
-        } catch (EmptyResultDataAccessException e1) {
-            //查询结果为空，返回null
+        Map<String, Object> map = jdbcTemplate.queryForMap("select * from subway where sid = ?",sid);
+        if(map==null){
             return null;
         }
-        Subway subway=(Subway) object;
+        //sid,code,cn_name,cename,cpre,l_xmlattr,p
+        List<Map<String,Object>> pmaplist = (List<Map<String,Object>>) JSONArray.parse((String) map.get("p"));
+        Map<String, Object> l_xmlattrmap= JSONObject.parseObject((String)map.get("l_xmlattr"));
+        Subway subway=new Subway(map.get("sid").toString(),Integer.parseInt(map.get("code").toString()),map.get("cn_name").toString(),map.get("cename").toString(),map.get("cpre").toString(),l_xmlattrmap,pmaplist);
         // 插入缓存中
         String str = new Gson().toJson(subway);
         operations.set(key, str,60*10, TimeUnit.SECONDS);//向redis里存入数据,设置缓存时间为10min
@@ -150,14 +171,14 @@ public class SubwayDaoImpl implements ISubwayDao {
 
     @Override
     public Map<String, Object> getAllSubways() {
-        /*String key = "subway_list";
+        String key = "subway_list";
         Boolean hasKey = redisTemplate.hasKey(key);
 
         ValueOperations operations = redisTemplate.opsForValue();
         //缓存中存在
         if (hasKey) {
             return JSONObject.parseObject((String) operations.get(key));
-        }*/
+        }
         //缓存中不存在
         List<Map<String, Object>> maplist =new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();

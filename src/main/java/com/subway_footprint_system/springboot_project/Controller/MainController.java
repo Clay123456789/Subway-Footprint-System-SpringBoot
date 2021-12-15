@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
 import com.subway_footprint_system.springboot_project.Pojo.*;
-import com.subway_footprint_system.springboot_project.Service.Impl.EMailServiceImpl;
-import com.subway_footprint_system.springboot_project.Service.Impl.StationServiceImpl;
-import com.subway_footprint_system.springboot_project.Service.Impl.SubwayServiceImpl;
-import com.subway_footprint_system.springboot_project.Service.Impl.UserServiceImpl;
+import com.subway_footprint_system.springboot_project.Service.Impl.*;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +31,8 @@ public class MainController {
         private UserServiceImpl userService;
         @Autowired
         private EMailServiceImpl eMailService;
+        @Autowired
+        private LightedStationServiceImpl lightedStationService;
 
     @CrossOrigin
     @RequestMapping("/hello")
@@ -88,14 +87,15 @@ public class MainController {
         return map;
     }
     /*
-     * 获取指定/所有城市铁路信息
+     * 请求方式：get
+     * 功能：获取指定/所有城市铁路信息
      * 路径 /Subway/getAllSubways
      * 传参(json) code(0代表所有)
-     * 返回值(json) String
+     * 返回值(json) String（用Result封装json中会有转义符干扰，故此接口直接返回结果）
      * */
     @CrossOrigin
-    @RequestMapping("/getAllSubways")
-    public String getAllSubways(int code) throws Exception {
+    @RequestMapping("/Subway/getAllSubways")
+    public Result getAllSubways(int code) throws Exception {
         Map<String, Object> map=null;
         if(code==0){
             map=subwayService.getAllSubways();
@@ -103,24 +103,25 @@ public class MainController {
             map=subwayService.getAllSubways(code);
         }
         if(map==null){
-            //return ResultFactory.buildFailResult("发生错误，获取失败");
-            return null;
+            return ResultFactory.buildFailResult("发生错误，获取失败");
+            //return null;
         }else{
             String data=StringEscapeUtils.unescapeJavaScript(JSON.toJSONString(map));
             System.out.println(data);
-            return data;
-           // return ResultFactory.buildSuccessResult(data);
+            //return data;
+            return ResultFactory.buildSuccessResult(data);
         }
 
     }
     /*
-     * 上传所有城市铁路信息
+     * 请求方式：get
+     * 功能：上传所有城市铁路信息
      * 路径 /Subway/uploadAllSubways
      * 传参(json) null
      * 返回值(json--Result) code,message,data(boolean)
      * */
     @CrossOrigin
-    @RequestMapping("/uploadAllSubways")
+    @RequestMapping("/Subway/uploadAllSubways")
     public Result uploadAllSubways() throws Exception {
         if(subwayService.uploadAllSubways()){
             return ResultFactory.buildSuccessResult(true);
@@ -129,9 +130,10 @@ public class MainController {
     }
 
     /*
-     * 登陆
+     * 请求方式：post
+     * 功能：登陆
      * 路径 /user/login
-     * 传参(json) uid
+     * 传参(json) username,password
      * 返回值(json--Result) code,message,data(str)
      * */
     @CrossOrigin
@@ -168,8 +170,9 @@ public class MainController {
 
 
     /*
-     * 发送注册邮箱
-     * 路径 /api/sendRegisterEmail
+     * 请求方式：post
+     * 功能：发送注册邮箱
+     * 路径 /user/sendRegisterEmail
      * 传参(json) email
      * 返回值(json--Result) code,message,data(str)
      * */
@@ -187,7 +190,8 @@ public class MainController {
     }
 
     /*
-     * 注册新用户
+     * 请求方式：post
+     * 功能：注册新用户
      * 路径 /user/regist
      * 传参(json) username,password,email,code
      * 返回值(json--Result) code,message,data(str)
@@ -206,7 +210,8 @@ public class MainController {
 
 
     /*
-     * 找回密码
+     * 请求方式：post
+     * 功能：找回密码
      * 路径 /user/findPassword
      * 传参(json) email
      * 返回值(json--Result) code,message,data(str)
@@ -223,7 +228,8 @@ public class MainController {
 
 
     /*
-     * 修改用户密码
+     * 请求方式：post
+     * 功能：修改用户密码
      * 路径 /user/changePassword
      * 传参(json) email,Password,newPassword,newPasswordRepeat
      * 返回值(json--Result) code,message,data(Str)
@@ -239,11 +245,11 @@ public class MainController {
     }
 
     /*
-     * 获取用户头像url
+     * 请求方式：post
+     * 功能：获取用户头像url
      * 路径 /user/getUserTouxiang
      * 传参(json):username/email
      * 返回值(json--Result) code,message,data(url)
-     * 功能：登陆时加载用户头像
      * */
     @CrossOrigin
     @PostMapping(value ="/user/getUserTouxiang")
@@ -253,11 +259,11 @@ public class MainController {
     }
 
     /*
-     * 获取用户信息
+     * 请求方式：post
+     * 功能：获取用户信息
      * 路径 /user/getUser
      * 传参(json):uid/email
-     * 返回值(json--Result) code,message,data((json)user)一个完整的User类实例
-     * 功能：得到用户信息
+     * 返回值(json--Result) code,message,data(User)一个完整的User类实例
      * */
     @CrossOrigin
     @PostMapping(value ="/user/getUser")
@@ -272,7 +278,8 @@ public class MainController {
     }
 
     /*
-     * 修改用户信息
+     * 请求方式：post
+     * 功能：修改用户信息
      * 路径 /user/updateUser
      * 传参(json) uid(定位需要修改的人） #修改属性#(newUsername,newEmail,newTel等等）
      * 返回值 (json--Result) code,message,data(str)
@@ -285,5 +292,87 @@ public class MainController {
             return ResultFactory.buildFailResult("更改个人信息失败！");
         }
         return ResultFactory.buildSuccessResult("已成功修个人信息！");
+    }
+    /*
+     * 请求方式：post
+     * 功能：用户新增点亮站点
+     * 路径 /user/addLightedStation
+     * 传参(json) uid(用户id） pid(站点id) point(积分) time(时间)
+     * 返回值 (json--Result) code,message,data(str)
+     * */
+    @CrossOrigin
+    @PostMapping(value ="/user/addLightedStation")
+    @ResponseBody
+    public Result addLightedStation(@Valid @RequestBody LightedStation lightedStation){
+        if (!lightedStationService.insertLightedStation(lightedStation)) {
+            return ResultFactory.buildFailResult("新增点亮站点失败！");
+        }
+        return ResultFactory.buildSuccessResult("已成功新增点亮站点！");
+    }
+    /*
+     * 请求方式：post
+     * 功能：用户删除点亮站点
+     * 路径 /user/deleteLightedStation
+     * 传参(json) uid(用户id） pid(站点id)
+     * 返回值 (json--Result) code,message,data(str)
+     * */
+    @CrossOrigin
+    @PostMapping(value ="/user/deleteLightedStation")
+    @ResponseBody
+    public Result deleteLightedStation(@Valid @RequestBody LightedStation lightedStation){
+        if (!lightedStationService.deleteLightedStation(lightedStation.getUid(),lightedStation.getPid())) {
+            return ResultFactory.buildFailResult("删除点亮站点失败！");
+        }
+        return ResultFactory.buildSuccessResult("已成功删除点亮站点！");
+    }
+    /*
+     * 请求方式：post
+     * 功能：用户修改点亮站点
+     * 路径 /user/updateLightedStation
+     * 传参(json) uid(用户id） pid(站点id) point(积分) time(时间)
+     * 返回值 (json--Result) code,message,data(str)
+     * */
+    @CrossOrigin
+    @PostMapping(value ="/user/updateLightedStation")
+    @ResponseBody
+    public Result updateLightedStation(@Valid @RequestBody LightedStation lightedStation){
+        if (!lightedStationService.updateLightedStation(lightedStation)) {
+            return ResultFactory.buildFailResult("修改点亮站点失败！");
+        }
+        return ResultFactory.buildSuccessResult("已成功修改点亮站点！");
+    }
+    /*
+     * 请求方式：post
+     * 功能：用户获取指定点亮站点信息
+     * 路径 /user/getLightedStation
+     * 传参(json) uid(用户id） pid(站点id)
+     * 返回值 (json--Result) code,message,data(LightedStation)
+     * */
+    @CrossOrigin
+    @PostMapping(value ="/user/getLightedStation")
+    @ResponseBody
+    public Result getLightedStation(@Valid @RequestBody LightedStation lightedStation){
+        LightedStation lightedStation1=lightedStationService.getLightedStation(lightedStation.getUid(),lightedStation.getPid());
+        if (lightedStation1==null) {
+            return ResultFactory.buildFailResult("获取点亮站点失败！");
+        }
+        return ResultFactory.buildSuccessResult(lightedStation1);
+    }
+    /*
+     * 请求方式：post
+     * 功能：用户获取个人全部点亮站点信息
+     * 路径 /user/getUserLightedStations
+     * 传参(json) uid(用户id）
+     * 返回值 (json--Result) code,message,data(List<LightedStation>)
+     * */
+    @CrossOrigin
+    @PostMapping(value ="/user/getUserLightedStations")
+    @ResponseBody
+    public Result getUserLightedStations(@Valid @RequestBody LightedStation lightedStation){
+        List<LightedStation> list=lightedStationService.getUserLightedStations(lightedStation.getUid());
+        if (list==null) {
+            return ResultFactory.buildFailResult("获取点亮站点失败！");
+        }
+        return ResultFactory.buildSuccessResult(list);
     }
 }

@@ -19,7 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 @Repository
 public class UserDaoImpl implements IUserDao {
-
+    @Autowired
+    private LightedStationDaoImpl lightedStationDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -43,12 +44,15 @@ public class UserDaoImpl implements IUserDao {
             if (hasKey) {
                 redisTemplate.delete(key);
             }
+            //创建user后需要创建lightedStation表
+            if(!lightedStationDao.TableExist(user.getUid())) {
+                lightedStationDao.createLightedStationTable(user.getUid());
+            }
             return true;
         }
         else{
             return false;
         }
-
     }
 
 
@@ -61,11 +65,22 @@ public class UserDaoImpl implements IUserDao {
         int result = jdbcTemplate.update("delete from user where uid = ?",uid);
         if(result!=0){
             // 判断是否缓存存在
-            String key = "user_" + uid;
-            Boolean hasKey = redisTemplate.hasKey(key);
+            String key1 = "user_" + uid;
+            String key2 = "user_list";
+            Boolean hasKey1 = redisTemplate.hasKey(key1);
             // 缓存存在，进行删除
-            if (hasKey) {
-                redisTemplate.delete(key);
+            if (hasKey1) {
+                redisTemplate.delete(key1);
+            }
+            // 判断是否缓存存在
+            Boolean hasKey2 = redisTemplate.hasKey(key2);
+            // 缓存存在，进行删除
+            if (hasKey2) {
+                redisTemplate.delete(key2);
+            }
+            //删除user后需要级联删除lightedStation表
+            if(lightedStationDao.TableExist(uid)) {
+                return lightedStationDao.deleteLightedStationTable(uid);
             }
             return true;
         }
@@ -87,11 +102,18 @@ public class UserDaoImpl implements IUserDao {
                 ,user.getUsername(),user.getPassword(),user.getEmail(),user.getAge(),user.getSex(),user.getTel(),user.getTouxiang(),user.getQianming(),user.getUid());
         if(result > 0){
             // 判断是否缓存存在
-            String key = "user_" + user.getUid();
-            Boolean hasKey = redisTemplate.hasKey(key);
+            String key1 = "user_" + user.getUid();
+            String key2 = "user_list";
+            Boolean hasKey1 = redisTemplate.hasKey(key1);
             // 缓存存在，进行删除
-            if (hasKey) {
-                redisTemplate.delete(key);
+            if (hasKey1) {
+                redisTemplate.delete(key1);
+            }
+            // 判断是否缓存存在
+            Boolean hasKey2 = redisTemplate.hasKey(key2);
+            // 缓存存在，进行删除
+            if (hasKey2) {
+                redisTemplate.delete(key2);
             }
             return true;
         }
@@ -106,7 +128,7 @@ public class UserDaoImpl implements IUserDao {
     @Override
     public User getUserByUid(String uid) {
 
-        // 从缓存中 取出学生信息
+        // 从缓存中 取出信息
         String key = "user_" + uid;
         Boolean hasKey = redisTemplate.hasKey(key);
 
@@ -127,12 +149,12 @@ public class UserDaoImpl implements IUserDao {
             //查询结果为空，返回null
             return null;
         }
-        User station1=(User) object;
+        User user=(User) object;
         // 插入缓存中
-        String str = new Gson().toJson(station1);
+        String str = new Gson().toJson(user);
         operations.set(key, str,60*10, TimeUnit.SECONDS);//向redis里存入数据,设置缓存时间为10min
 
-        return station1;
+        return user;
 
     }
 
@@ -160,12 +182,12 @@ public class UserDaoImpl implements IUserDao {
             //查询结果为空，返回null
             return null;
         }
-        User station1=(User) object;
+        User user=(User) object;
         // 插入缓存中
-        String str = new Gson().toJson(station1);
+        String str = new Gson().toJson(user);
         operations.set(key, str,60*10, TimeUnit.SECONDS);//向redis里存入数据,设置缓存时间为10min
 
-        return station1;
+        return user;
 
     }
     @Override
@@ -192,12 +214,12 @@ public class UserDaoImpl implements IUserDao {
             //查询结果为空，返回null
             return null;
         }
-        User station1=(User) object;
+        User user=(User) object;
         // 插入缓存中
-        String str = new Gson().toJson(station1);
+        String str = new Gson().toJson(user);
         operations.set(key, str,60*10, TimeUnit.SECONDS);//向redis里存入数据,设置缓存时间为10min
 
-        return station1;
+        return user;
 
     }
 

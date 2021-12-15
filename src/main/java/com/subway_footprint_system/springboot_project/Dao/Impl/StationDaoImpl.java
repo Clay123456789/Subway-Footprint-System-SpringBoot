@@ -106,7 +106,7 @@ public class StationDaoImpl implements IStationDao {
     @Override
     public Station select(Station station) {
 
-        // 从缓存中 取出学生信息
+        // 从缓存中 取出信息
         String key = "station_" + station.getSid();
         Boolean hasKey = redisTemplate.hasKey(key);
 

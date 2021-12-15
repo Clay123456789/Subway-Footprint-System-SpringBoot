@@ -13,12 +13,12 @@ public class Subway {
     private String cename;//城市英文名称
     private String cpre;//城市英文名称
     private Map<String, Object> l_xmlattr;//地铁线路信息
-    private Map<String, Object> p;//地铁线路所有站点数组信息
+    private List<Map<String, Object>> p;//地铁线路所有站点数组信息
 
     public Subway() {
     }
 
-    public Subway(String sid, int code, String cn_name, String cename, String cpre, Map<String, Object> l_xmlattr, Map<String, Object> p) {
+    public Subway(String sid, int code, String cn_name, String cename, String cpre, Map<String, Object> l_xmlattr, List<Map<String, Object>> p) {
         this.sid = sid;
         this.code = code;
         this.cn_name = cn_name;
@@ -76,14 +76,11 @@ public class Subway {
         this.l_xmlattr = l_xmlattr;
     }
 
-    public Map<String, Object> getP() {
+    public List<Map<String, Object>> getP() {
         return p;
     }
 
-    public void setP(Map<String, Object> p) {
+    public void setP(List<Map<String, Object>> p) {
         this.p = p;
     }
-
-
-
 }
