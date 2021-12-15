@@ -119,7 +119,12 @@ public class SubwayServiceImpl implements ISubwayService {
                     for (int j = 0; j < l.size(); j++) {
                         JSONObject jsonObject6 = JSONObject.parseObject(l.get(j).toString());
                         Map<String,Object> l_xmlattr=JSONObject.parseObject(jsonObject6.getString("l_xmlattr"));
-                        Map<String,Object> p=JSONObject.parseObject(jsonObject6.getString("p"));
+
+                        //List<Map<String,Object>> p=
+                        JSONArray t = JSONObject.parseArray(jsonObject6.getString("p"));
+
+                        List<Map<String,Object>> p = ( List<Map<String,Object>> )JSONObject.parse(t.toJSONString());
+
                         String lid=JSONObject.parseObject(jsonObject6.getString("l_xmlattr")).getString("lid");
 
                         if(subwayDao.getSubway(code+"_"+lid)==null){
