@@ -10,7 +10,11 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new JWTInterceptor())
-                .excludePathPatterns("/**") ;// 用户登录接口不用于token验证
-               // .addPathPatterns("/**"); // 其他非登录接口都需要进行token验证
+                //.excludePathPatterns("/**");
+                .excludePathPatterns("/user/regist") // 用户登录接口不用于token验
+                .excludePathPatterns("/user/login")
+                .excludePathPatterns("/user/sendRegistEmail")
+                .excludePathPatterns("/user/findPassword")
+                .addPathPatterns("/**"); // 其他非登录接口都需要进行token验证
     }
 }

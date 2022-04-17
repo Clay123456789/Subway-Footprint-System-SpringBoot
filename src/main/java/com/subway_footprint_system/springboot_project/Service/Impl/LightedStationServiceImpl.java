@@ -12,24 +12,10 @@ import java.util.List;
 public class LightedStationServiceImpl implements ILightedStationService {
     @Autowired
     private LightedStationDaoImpl lightedStationDao;
-    @Override
-    public boolean TableExist(String uid) {
-        return lightedStationDao.TableExist(uid);
-    }
-
-    @Override
-    public boolean createLightedStationTable(String uid) {
-        return lightedStationDao.createLightedStationTable(uid);
-    }
 
     @Override
     public boolean insertLightedStation(LightedStation lightedStation) {
         return lightedStationDao.insertLightedStation(lightedStation);
-    }
-
-    @Override
-    public boolean deleteLightedStationTable(String uid) {
-        return lightedStationDao.deleteLightedStationTable(uid);
     }
 
     @Override

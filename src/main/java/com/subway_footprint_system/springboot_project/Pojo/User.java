@@ -13,13 +13,16 @@ public class User {
     //用户头像，以url存储
     private String touxiang;
     private String qianming;
-    private String stationtable;//存储点亮的地铁站的表名称
+    private String credit;///碳积分数目
+
     public User() {
     }
+
     public User(String email) {
         this.email = email;
     }
-    public User(String uid, String username, String password, String email, int age, String sex, String tel, String touxiang, String qianming, String stationtable) {
+
+    public User(String uid, String username, String password, String email, int age, String sex, String tel, String touxiang, String qianming, String credit) {
         this.uid = uid;
         this.username = username;
         this.password = password;
@@ -29,7 +32,7 @@ public class User {
         this.tel = tel;
         this.touxiang = touxiang;
         this.qianming = qianming;
-        this.stationtable = stationtable;
+        this.credit = credit;
     }
 
     public String getUid() {
@@ -104,11 +107,11 @@ public class User {
         this.qianming = qianming;
     }
 
-    public String getStationtable() {
-        return stationtable;
+    public String getCredit() {
+        return credit;
     }
 
-    public void setStationtable(String stationtable) {
-        this.stationtable = stationtable;
+    public void setCredit(String credit) {
+        this.credit = credit;
     }
 }

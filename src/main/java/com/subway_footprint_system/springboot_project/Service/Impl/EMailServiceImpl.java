@@ -1,9 +1,7 @@
 package com.subway_footprint_system.springboot_project.Service.Impl;
 
-import com.subway_footprint_system.springboot_project.Dao.IUserDao;
 import com.subway_footprint_system.springboot_project.Pojo.User;
 import com.subway_footprint_system.springboot_project.Pojo.UserVo;
-import com.subway_footprint_system.springboot_project.Pojo.UserVoToUser;
 import com.subway_footprint_system.springboot_project.Service.IEMailService;
 import com.subway_footprint_system.springboot_project.Service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +132,7 @@ public class EMailServiceImpl implements IEMailService {
                 mailMessage.setSubject("修改密码邮件");//主题
                 //保存密码
                 String password=userService.getUserByEmail(userVo.getEmail()).getPassword();
-                mailMessage.setText("您的账号已修改了密码，请确认是本人所为，注意账号安全");
+                mailMessage.setText("您的账号已修改了密码，请确认是否本人所为，注意账号安全");
 
                 mailMessage.setTo(userVo.getEmail());//发给谁
 
