@@ -24,8 +24,6 @@ import java.util.Map;
 @RestController
 public class MainController {
         @Autowired
-        private StationServiceImpl stationService;
-        @Autowired
         private SubwayServiceImpl subwayService;
         @Autowired
         private UserServiceImpl userService;
@@ -39,37 +37,6 @@ public class MainController {
     public String hello(String username){
 
         return "Hello,"+username+"!";
-    }
-    /*测试Station的redis+mysql存储相关代码接口*/
-    @CrossOrigin
-    @RequestMapping("/addStation")
-    public boolean addStation(String sid, String sname, float longitude, float latitude, String route){
-
-        return stationService.insert(new Station(sid,sname,longitude,latitude,route));
-    }
-    @CrossOrigin
-    @RequestMapping("/updateStation")
-    public boolean updateStation(String sid, String sname, float longitude, float latitude, String route){
-
-        return stationService.update(new Station(sid,sname,longitude,latitude,route));
-    }
-    @CrossOrigin
-    @RequestMapping("/deleteStation")
-    public boolean deleteStation(String sid, String sname, float longitude, float latitude, String route){
-
-        return stationService.delete(new Station(sid,sname,longitude,latitude,route));
-    }
-    @CrossOrigin
-    @RequestMapping("/selectStation")
-    public Station selectStation(String sid, String sname, float longitude, float latitude, String route){
-
-        return stationService.select(new Station(sid,sname,longitude,latitude,route));
-    }
-    @CrossOrigin
-    @RequestMapping("/selectAllStation")
-    public List<Station> selectAllStation(String sid, String sname, float longitude, float latitude, String route){
-
-        return stationService.selectAll(new Station(sid,sname,longitude,latitude,route));
     }
 
     @PostMapping("/test")
@@ -95,7 +62,7 @@ public class MainController {
      * */
     @CrossOrigin
     @RequestMapping("/Subway/getAllSubways")
-    public Result getAllSubways(int code) throws Exception {
+    public String getAllSubways(int code) throws Exception {
         Map<String, Object> map=null;
         if(code==0){
             map=subwayService.getAllSubways();
@@ -103,13 +70,13 @@ public class MainController {
             map=subwayService.getAllSubways(code);
         }
         if(map==null){
-            return ResultFactory.buildFailResult("发生错误，获取失败");
-            //return null;
+           // return ResultFactory.buildFailResult("发生错误，获取失败");
+            return null;
         }else{
             String data=StringEscapeUtils.unescapeJavaScript(JSON.toJSONString(map));
             System.out.println(data);
-            //return data;
-            return ResultFactory.buildSuccessResult(data);
+            return data;
+            //return ResultFactory.buildSuccessResult(data);
         }
 
     }
@@ -163,6 +130,7 @@ public class MainController {
         //已注册
         Map<String, String> map = new HashMap<>(); //用来存放payload信息
         map.put("uid",uid);
+        map.put("email",userVo.getEmail());
         // 生成token令牌
         String token = JWTUtil.generateToken(map);
         return ResultFactory.buildSuccessResult(token);
@@ -231,7 +199,7 @@ public class MainController {
      * 请求方式：post
      * 功能：修改用户密码
      * 路径 /user/changePassword
-     * 传参(json) email,Password,newPassword,newPasswordRepeat
+     * 传参(json) email,Password,newPassword
      * 返回值(json--Result) code,message,data(Str)
      * */
     @CrossOrigin
@@ -246,133 +214,186 @@ public class MainController {
 
     /*
      * 请求方式：post
-     * 功能：获取用户头像url
-     * 路径 /user/getUserTouxiang
-     * 传参(json):username/email
-     * 返回值(json--Result) code,message,data(url)
-     * */
-    @CrossOrigin
-    @PostMapping(value ="/user/getUserTouxiang")
-    @ResponseBody
-    public Result getUserTouxiang(@Valid @RequestBody User user){
-        return ResultFactory.buildSuccessResult(userService.getUserTouxiang(user.getUsername()));
-    }
-
-    /*
-     * 请求方式：post
      * 功能：获取用户信息
      * 路径 /user/getUser
-     * 传参(json):uid/email
+     * 传参(json):null
      * 返回值(json--Result) code,message,data(User)一个完整的User类实例
      * */
     @CrossOrigin
     @PostMapping(value ="/user/getUser")
     @ResponseBody
-    public Result getUser(@Valid @RequestBody User user) {
-        if(user.getUid()!=null){
-            return ResultFactory.buildSuccessResult(userService.getUserByUid(user.getUid()));
-        }else if(user.getEmail()!=null){
-            return ResultFactory.buildSuccessResult(userService.getUserByEmail(user.getEmail()));
+    public Result getUser(HttpServletRequest request) {
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String uid = decodedJWT.getClaim("uid").asString();
+            return ResultFactory.buildSuccessResult(userService.getUserByUid(uid));
+        }catch (Exception e){
+            return ResultFactory.buildFailResult("登陆状态异常！");
         }
-        return ResultFactory.buildFailResult("获取信息失败！");
     }
 
     /*
      * 请求方式：post
-     * 功能：修改用户信息
+     * 功能：修改用户信息（不包含修改用户uid、密码、和邮箱）
      * 路径 /user/updateUser
-     * 传参(json) uid(定位需要修改的人） #修改属性#(newUsername,newEmail,newTel等等）
+     * 传参(json) （修改后的的User各属性）username,age,sex,tel,touxiang,qianming,credit
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
     @PostMapping(value ="/user/updateUser")
     @ResponseBody
-    public Result updateUser(@Valid @RequestBody UserVo userVo){
-        if (!userService.updateUser(userVo)) {
+    public Result updateUser(HttpServletRequest request,@Valid @RequestBody UserVo userVo){
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String uid = decodedJWT.getClaim("uid").asString();
+            userVo.setUid(uid);
+            if (userService.updateUser(userVo)) {
+                return ResultFactory.buildSuccessResult("已成功修个人信息！");
+            }
             return ResultFactory.buildFailResult("更改个人信息失败！");
+        }catch (Exception e){
+            return ResultFactory.buildFailResult("登陆状态异常！");
         }
-        return ResultFactory.buildSuccessResult("已成功修个人信息！");
+
     }
     /*
      * 请求方式：post
      * 功能：用户新增点亮站点
      * 路径 /user/addLightedStation
-     * 传参(json) uid(用户id） pid(站点id) point(积分) time(时间)
+     * 传参(json) pid(站点id) credit(点亮获得碳积分) time(时间)
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
     @PostMapping(value ="/user/addLightedStation")
     @ResponseBody
-    public Result addLightedStation(@Valid @RequestBody LightedStation lightedStation){
-        if (!lightedStationService.insertLightedStation(lightedStation)) {
-            return ResultFactory.buildFailResult("新增点亮站点失败！");
+    public Result addLightedStation(HttpServletRequest request,@Valid @RequestBody LightedStation lightedStation){
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String uid = decodedJWT.getClaim("uid").asString();
+            lightedStation.setUid(uid);
+            if (!lightedStationService.insertLightedStation(lightedStation)) {
+                return ResultFactory.buildFailResult("新增点亮站点失败！");
+            }
+            return ResultFactory.buildSuccessResult("已成功新增点亮站点！");
+        }catch (Exception e){
+            return ResultFactory.buildFailResult("登陆状态异常！");
         }
-        return ResultFactory.buildSuccessResult("已成功新增点亮站点！");
+
     }
     /*
      * 请求方式：post
      * 功能：用户删除点亮站点
      * 路径 /user/deleteLightedStation
-     * 传参(json) uid(用户id） pid(站点id)
+     * 传参(json) pid(站点id)
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
     @PostMapping(value ="/user/deleteLightedStation")
     @ResponseBody
-    public Result deleteLightedStation(@Valid @RequestBody LightedStation lightedStation){
-        if (!lightedStationService.deleteLightedStation(lightedStation.getUid(),lightedStation.getPid())) {
-            return ResultFactory.buildFailResult("删除点亮站点失败！");
+    public Result deleteLightedStation(HttpServletRequest request,@Valid @RequestBody LightedStation lightedStation){
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String uid = decodedJWT.getClaim("uid").asString();
+            lightedStation.setUid(uid);
+            if (!lightedStationService.deleteLightedStation(lightedStation.getUid(),lightedStation.getPid())) {
+                return ResultFactory.buildFailResult("删除点亮站点失败！");
+            }
+            return ResultFactory.buildSuccessResult("已成功删除点亮站点！");
+        }catch (Exception e){
+            return ResultFactory.buildFailResult("登陆状态异常！");
         }
-        return ResultFactory.buildSuccessResult("已成功删除点亮站点！");
     }
     /*
      * 请求方式：post
      * 功能：用户修改点亮站点
      * 路径 /user/updateLightedStation
-     * 传参(json) uid(用户id） pid(站点id) point(积分) time(时间)
+     * 传参(json) pid(站点id) point(积分) time(时间)
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
     @PostMapping(value ="/user/updateLightedStation")
     @ResponseBody
-    public Result updateLightedStation(@Valid @RequestBody LightedStation lightedStation){
-        if (!lightedStationService.updateLightedStation(lightedStation)) {
-            return ResultFactory.buildFailResult("修改点亮站点失败！");
+    public Result updateLightedStation(HttpServletRequest request,@Valid @RequestBody LightedStation lightedStation){
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String uid = decodedJWT.getClaim("uid").asString();
+            lightedStation.setUid(uid);
+            if (!lightedStationService.updateLightedStation(lightedStation)) {
+                return ResultFactory.buildFailResult("修改点亮站点失败！");
+            }
+            return ResultFactory.buildSuccessResult("已成功修改点亮站点！");
+        }catch (Exception e){
+            return ResultFactory.buildFailResult("登陆状态异常！");
         }
-        return ResultFactory.buildSuccessResult("已成功修改点亮站点！");
+
     }
     /*
      * 请求方式：post
      * 功能：用户获取指定点亮站点信息
      * 路径 /user/getLightedStation
-     * 传参(json) uid(用户id） pid(站点id)
+     * 传参(json) pid(站点id)
      * 返回值 (json--Result) code,message,data(LightedStation)
      * */
     @CrossOrigin
     @PostMapping(value ="/user/getLightedStation")
     @ResponseBody
-    public Result getLightedStation(@Valid @RequestBody LightedStation lightedStation){
-        LightedStation lightedStation1=lightedStationService.getLightedStation(lightedStation.getUid(),lightedStation.getPid());
-        if (lightedStation1==null) {
-            return ResultFactory.buildFailResult("获取点亮站点失败！");
+    public Result getLightedStation(HttpServletRequest request,@Valid @RequestBody LightedStation lightedStation){
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String uid = decodedJWT.getClaim("uid").asString();
+            lightedStation.setUid(uid);
+            LightedStation lightedStation1=lightedStationService.getLightedStation(lightedStation.getUid(),lightedStation.getPid());
+            if (lightedStation1==null) {
+                return ResultFactory.buildFailResult("获取点亮站点失败！");
+            }
+            return ResultFactory.buildSuccessResult(lightedStation1);
+        }catch (Exception e){
+            return ResultFactory.buildFailResult("登陆状态异常！");
         }
-        return ResultFactory.buildSuccessResult(lightedStation1);
     }
     /*
      * 请求方式：post
      * 功能：用户获取个人全部点亮站点信息
      * 路径 /user/getUserLightedStations
-     * 传参(json) uid(用户id）
+     * 传参(json) null
      * 返回值 (json--Result) code,message,data(List<LightedStation>)
      * */
     @CrossOrigin
     @PostMapping(value ="/user/getUserLightedStations")
     @ResponseBody
-    public Result getUserLightedStations(@Valid @RequestBody LightedStation lightedStation){
-        List<LightedStation> list=lightedStationService.getUserLightedStations(lightedStation.getUid());
-        if (list==null) {
-            return ResultFactory.buildFailResult("获取点亮站点失败！");
+    public Result getUserLightedStations(HttpServletRequest request,@Valid @RequestBody LightedStation lightedStation){
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String uid = decodedJWT.getClaim("uid").asString();
+            lightedStation.setUid(uid);
+            List<LightedStation> list=lightedStationService.getUserLightedStations(lightedStation.getUid());
+            if (list==null) {
+                return ResultFactory.buildFailResult("获取点亮站点失败！");
+            }
+            return ResultFactory.buildSuccessResult(list);
+        }catch (Exception e){
+            return ResultFactory.buildFailResult("登陆状态异常！");
         }
-        return ResultFactory.buildSuccessResult(list);
     }
 }

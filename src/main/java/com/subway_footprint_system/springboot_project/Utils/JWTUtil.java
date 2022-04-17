@@ -11,7 +11,7 @@ import java.util.Map;
 public class JWTUtil {
 
     // 用于JWT进行签名加密的秘钥
-    private static String SECRET = "code-duck-*%#@*!&";
+    private static String SECRET = "subway_footprint*%#@*!&";
 
     /**
      * @Param: 传入需要设置的payload信息
@@ -25,7 +25,7 @@ public class JWTUtil {
             builder.withClaim(k, v);
         });
 
-        // 设置JWT令牌的过期时间为60
+        // 设置JWT令牌的过期时间为7天
         Calendar instance = Calendar.getInstance();
         instance.add(Calendar.DATE, 7);
         builder.withExpiresAt(instance.getTime());

@@ -2,7 +2,6 @@ package com.subway_footprint_system.springboot_project.Service.Impl;
 import com.subway_footprint_system.springboot_project.Dao.Impl.UserDaoImpl;
 import com.subway_footprint_system.springboot_project.Pojo.User;
 import com.subway_footprint_system.springboot_project.Pojo.UserVo;
-import com.subway_footprint_system.springboot_project.Pojo.UserVoToUser;
 import com.subway_footprint_system.springboot_project.Service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,13 +12,11 @@ import java.util.List;
 public class UserServiceImpl implements IUserService {
     @Autowired
     private UserDaoImpl userDao;
-    @Autowired
-    private UserVoToUser userVoToUser;
 
 
     @Override
     public boolean insertUser(UserVo userVo) {
-        return userDao.insertUser(userVoToUser.toUser(userVo));
+        return userDao.insertUser(userVo);
     }
 
     @Override
@@ -32,40 +29,30 @@ public class UserServiceImpl implements IUserService {
         //先判断用户是否合法
         if(judgeByUid(userVo)){
             //获取用户原信息
-            User user=getUserByUid(userVo.getUid());
+            User user=getUserByEmail(userVo.getEmail());
             //修改密码
             user.setPassword(userVo.getNewPassword());
             //更新
             return userDao.updateUser(user);
-            //发送更改密码提示
-
         }
         return false;
     }
 
     @Override
     public boolean updateEmail(UserVo userVo) {
-        if(judgeByUid(userVo)){
-            User user=getUserByUid(userVo.getUid());
-            user.setEmail(userVo.getNewEmail());
-            return userDao.updateUser(user);
-        }
+        /*
+        * 由于更改邮箱流程较为复杂，该方法后续再实现。
+        *
+        *
+        *
+        * */
         return false;
     }
 
-    @Override
-    public boolean updateUserName(UserVo userVo) {
-        if(judgeByUid(userVo)){
-            User user=getUserByUid(userVo.getUid());
-            user.setUsername(userVo.getNewUsername());
-            return userDao.updateUser(user);
-        }
-        return false;
-    }
 
     @Override
     public boolean updateUser(UserVo userVo) {
-        return  userDao.updateUser(UserVoToUser.toNewUser(userVo));
+        return  userDao.updateUser(userVo);
     }
 
     @Override
@@ -75,22 +62,15 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public User getUserByEmail(String email) {
-        return userDao.getUserByUid(email);
+        return userDao.getUserByEmail(email);
     }
 
     @Override
-    public User getUserByUsername(String email) {
-        return userDao.getUserByUid(email);
+    public User getUserByUsername(String username) {
+        return userDao.getUserByUsername(username);
     }
 
-    @Override
-    public String getUserTouxiang(String uid) {
-        User user=getUserByUid(uid);
-        if(user!=null){
-            return user.getTouxiang();
-        }
-        return null;
-    }
+
 
     @Override
     public List<User> getAllUsers() {
