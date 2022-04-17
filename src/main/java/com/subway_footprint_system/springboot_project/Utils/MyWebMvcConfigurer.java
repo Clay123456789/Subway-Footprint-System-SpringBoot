@@ -11,7 +11,8 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new JWTInterceptor())
                 //.excludePathPatterns("/**");
-                .excludePathPatterns("/user/regist") // 用户登录接口不用于token验
+                .excludePathPatterns("/Subway/**") // 地铁图相关接口不用于token验证
+                .excludePathPatterns("/user/regist") // 用户登录注册相关接口不用于token验证
                 .excludePathPatterns("/user/login")
                 .excludePathPatterns("/user/sendRegistEmail")
                 .excludePathPatterns("/user/findPassword")
