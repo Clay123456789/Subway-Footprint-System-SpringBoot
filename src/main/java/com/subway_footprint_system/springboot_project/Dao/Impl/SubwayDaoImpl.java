@@ -154,19 +154,23 @@ public class SubwayDaoImpl implements ISubwayDao {
             return new Gson().fromJson(str, Subway.class);
         }
         //缓存中不存在
-        Map<String, Object> map = jdbcTemplate.queryForMap("select * from subway where sid = ?",sid);
-        if(map==null){
-            return null;
+        try {
+            Map<String, Object> map = jdbcTemplate.queryForMap("select * from subway where sid = ?", sid);
+            if (map == null) {
+                return null;
+            }
+            //sid,code,cn_name,cename,cpre,l_xmlattr,p
+            List<Map<String, Object>> pmaplist = (List<Map<String, Object>>) JSONArray.parse((String) map.get("p"));
+            Map<String, Object> l_xmlattrmap = JSONObject.parseObject((String) map.get("l_xmlattr"));
+            Subway subway = new Subway(map.get("sid").toString(), Integer.parseInt(map.get("code").toString()), map.get("cn_name").toString(), map.get("cename").toString(), map.get("cpre").toString(), l_xmlattrmap, pmaplist);
+            // 插入缓存中
+            String str = new Gson().toJson(subway);
+            operations.set(key, str, 60 * 10, TimeUnit.SECONDS);//向redis里存入数据,设置缓存时间为10min
+            return subway;
+        }catch (EmptyResultDataAccessException e){
+            e.printStackTrace();
         }
-        //sid,code,cn_name,cename,cpre,l_xmlattr,p
-        List<Map<String,Object>> pmaplist = (List<Map<String,Object>>) JSONArray.parse((String) map.get("p"));
-        Map<String, Object> l_xmlattrmap= JSONObject.parseObject((String)map.get("l_xmlattr"));
-        Subway subway=new Subway(map.get("sid").toString(),Integer.parseInt(map.get("code").toString()),map.get("cn_name").toString(),map.get("cename").toString(),map.get("cpre").toString(),l_xmlattrmap,pmaplist);
-        // 插入缓存中
-        String str = new Gson().toJson(subway);
-        operations.set(key, str,60*10, TimeUnit.SECONDS);//向redis里存入数据,设置缓存时间为10min
-
-        return subway;
+           return null;
     }
 
     @Override
