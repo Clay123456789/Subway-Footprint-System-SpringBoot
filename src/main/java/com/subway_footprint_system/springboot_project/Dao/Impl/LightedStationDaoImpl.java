@@ -16,7 +16,7 @@ public class LightedStationDaoImpl implements ILightedStationDao {
 
 
     /*
-    * 对于该表数据而言，删改频率较高，查询同一数据频率较低，故不使用redis，直接对mysql操作
+    * 对于该表数据而言，更新频率较高，故不使用redis，直接对mysql操作
     * */
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -92,7 +92,9 @@ public class LightedStationDaoImpl implements ILightedStationDao {
         }
         return (LightedStation) object;
     }
-
+    /*
+    * 获取指定uid的所有记录
+    * */
     @Override
     public List<LightedStation> getUserLightedStations(String uid) {
         List<LightedStation> list=null;

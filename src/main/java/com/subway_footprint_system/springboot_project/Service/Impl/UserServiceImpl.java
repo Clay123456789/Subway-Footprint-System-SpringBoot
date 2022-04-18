@@ -27,13 +27,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public boolean updatePassword(UserVo userVo) {
         //先判断用户是否合法
-        if(judgeByUid(userVo)){
+        if(judgeByEmail(userVo)){
             //获取用户原信息
             User user=getUserByEmail(userVo.getEmail());
             //修改密码
-            user.setPassword(userVo.getNewPassword());
-            //更新
-            return userDao.updateUser(user);
+            return userDao.changePassword(user.getUid(),userVo.getNewPassword());
         }
         return false;
     }
