@@ -33,7 +33,7 @@ public class EMailServiceImpl implements IEMailService {
     public boolean sendRegistEmail(String email, HttpSession session) {
 
         //该邮箱已经注册
-        if(userService.getUserByEmail(new User(email).getEmail())!=null){
+        if(userService.getUserByEmail(email)!=null){
             return false;
         }
         try {
@@ -91,9 +91,16 @@ public class EMailServiceImpl implements IEMailService {
             //return "error,请重新注册";
             return false;
         }
+
         //将邮箱作为uid和默认用户名
         userVo.setUid(userVo.getEmail());
-        userVo.setUsername(userVo.getEmail());
+        if(null==userVo.getUsername()){
+            userVo.setUsername(userVo.getEmail());
+        }
+        //如果用户名或邮箱已存在，注册失败
+        if(null!=userService.getUserByEmail(email)||null!=userService.getUserByUsername(userVo.getUsername())){
+            return false;
+        }
         //将数据写入数据库
         userService.insertUser(userVo);
 
