@@ -140,7 +140,7 @@ public class MainController {
     /*
      * 请求方式：post
      * 功能：发送注册邮箱
-     * 路径 /user/sendRegisterEmail
+     * 路径 /user/sendRegistEmail
      * 传参(json) email
      * 返回值(json--Result) code,message,data(str)
      * */
@@ -379,13 +379,14 @@ public class MainController {
     @CrossOrigin
     @PostMapping(value ="/user/getUserLightedStations")
     @ResponseBody
-    public Result getUserLightedStations(HttpServletRequest request,@Valid @RequestBody LightedStation lightedStation){
+    public Result getUserLightedStations(HttpServletRequest request){
         try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");
             // 根据token解析出uid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String uid = decodedJWT.getClaim("uid").asString();
+            LightedStation lightedStation=new LightedStation();
             lightedStation.setUid(uid);
             List<LightedStation> list=lightedStationService.getUserLightedStations(lightedStation.getUid());
             if (list==null) {
