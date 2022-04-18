@@ -125,8 +125,9 @@ public class MainController {
             }
             User user=userService.getUserByEmail(userVo.getEmail());
             uid=user.getUid();
+        }else{
+            uid=userService.getUserByUsername(userVo.getUsername()).getUid();
         }
-        uid=userService.getUserByUsername(userVo.getUsername()).getUid();
         //已注册
         Map<String, String> map = new HashMap<>(); //用来存放payload信息
         map.put("uid",uid);
@@ -317,9 +318,9 @@ public class MainController {
     }
     /*
      * 请求方式：post
-     * 功能：用户修改点亮站点
+     * 功能：用户修改点亮站点获得的碳积分
      * 路径 /user/updateLightedStation
-     * 传参(json) pid(站点id) point(积分) time(时间)
+     * 传参(json) pid(站点id) credit(积分)
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
