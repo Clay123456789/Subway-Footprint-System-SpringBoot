@@ -90,6 +90,24 @@ public class UserDaoImpl implements IUserDao {
         return false;
     }
 
+    @Override
+    public boolean changePassword(String uid, String password) {
+        //返回影响行数，为1表示修改成功
+        int result = jdbcTemplate.update("update user set password=? where uid=?",password,uid);
+        if(result > 0){
+            // 判断是否缓存存在
+            String key1 = "user_" + uid;
+            Boolean hasKey1 = redisTemplate.hasKey(key1);
+            // 缓存存在，进行删除
+            if (hasKey1) {
+                redisTemplate.delete(key1);
+            }
+
+            return true;
+        }
+        return false;
+    }
+
     /**
      * 通过uid获取一行数据：
      * 如果缓存(redis)中存在，从缓存中获取信息

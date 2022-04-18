@@ -199,7 +199,7 @@ public class MainController {
      * 请求方式：post
      * 功能：修改用户密码
      * 路径 /user/changePassword
-     * 传参(json) email,Password,newPassword
+     * 传参(json) email,password,newPassword
      * 返回值(json--Result) code,message,data(Str)
      * */
     @CrossOrigin
@@ -397,4 +397,5 @@ public class MainController {
             return ResultFactory.buildFailResult("登陆状态异常！");
         }
     }
+
 }
