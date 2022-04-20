@@ -6,6 +6,7 @@ import com.subway_footprint_system.springboot_project.Pojo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IUserService {
 
@@ -29,4 +30,6 @@ public interface IUserService {
     boolean judgeByUid(UserVo userVo);
     boolean judgeByUsername(UserVo userVo);
     boolean judgeByEmail(UserVo userVo);
+    //获取碳积分排行榜
+    List<Map<String, String>> getRankingList();
 }

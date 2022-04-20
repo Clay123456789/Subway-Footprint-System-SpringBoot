@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @EnableAutoConfiguration
@@ -390,7 +388,7 @@ public class MainController {
             LightedStation lightedStation=new LightedStation();
             lightedStation.setUid(uid);
             List<LightedStation> list=lightedStationService.getUserLightedStations(lightedStation.getUid());
-            if (list==null) {
+            if (null==list) {
                 return ResultFactory.buildFailResult("获取点亮站点失败！");
             }
             return ResultFactory.buildSuccessResult(list);
@@ -398,5 +396,21 @@ public class MainController {
             return ResultFactory.buildFailResult("登陆状态异常！");
         }
     }
-
+    /*
+     * 请求方式：post
+     * 功能：获取碳积分排行榜（前10位）
+     * 路径 /user/getRankingList
+     * 传参(json) null
+     * 返回值 (json--Result) code,message,data(List<map>)
+     * */
+    @CrossOrigin
+    @PostMapping(value ="/user/getRankingList")
+    @ResponseBody
+    public Result getRankingList(){
+        List<Map<String, String>> list = userService.getRankingList();
+        if (null==list) {
+            return ResultFactory.buildFailResult("获取碳积分排行榜失败！");
+        }
+        return ResultFactory.buildSuccessResult(list);
+    }
 }

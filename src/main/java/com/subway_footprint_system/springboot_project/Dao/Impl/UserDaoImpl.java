@@ -201,4 +201,16 @@ public class UserDaoImpl implements IUserDao {
         }
         return list;
     }
+
+    public List<User> getRankingList() {
+        List<User> list=null;
+        try{
+            RowMapper<User> rowMapper = new BeanPropertyRowMapper<User>(User.class);
+            list= jdbcTemplate.query("select * from user order by credit desc LIMIT 10",rowMapper);
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return list;
+    }
 }

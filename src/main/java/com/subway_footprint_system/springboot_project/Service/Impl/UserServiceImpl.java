@@ -6,7 +6,10 @@ import com.subway_footprint_system.springboot_project.Service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -105,6 +108,22 @@ public class UserServiceImpl implements IUserService {
             return user.getPassword().equals(userVo.getPassword());
         }
         return false;
+    }
+
+    @Override
+    public List<Map<String, String>> getRankingList() {
+
+        List<User> users=userDao.getRankingList();
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        for (int i = 0; i < users.size(); i++) {
+            Map<String,String> map=new HashMap<>();
+            map.put("rank",i+1+"");
+            map.put("touxiang",users.get(i).getTouxiang());
+            map.put("username",users.get(i).getUsername());
+            map.put("credit",users.get(i).getCredit());
+            list.add(map);
+        }
+        return list;
     }
 
 
