@@ -43,6 +43,11 @@
             <artifactId>jasypt-spring-boot-starter</artifactId>
             <version>3.0.4</version>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.25</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -244,6 +249,39 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <!--修改版本-->
+                <version>3.1.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <!--maven的antrun插件，实现文件的拷贝-->
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <!--表示在package的时候执行下面的操作-->
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <!--可以注意到maven的package打包的jar都放在target目录下，
+                                并且是按照"${project.artifactId}-${project.version}.${project.packaging}"这个格式来命名的-->
+                                <!--将生成的jar复制到刚刚的docker文件夹中，以便传输-->
+                                <copy todir="src/docker"
+                                      file="target/${project.artifactId}-${project.version}.${project.packaging}"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
