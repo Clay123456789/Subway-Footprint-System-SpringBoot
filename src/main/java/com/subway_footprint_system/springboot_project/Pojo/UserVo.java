@@ -12,7 +12,18 @@ public class UserVo extends User{
     public UserVo() {
 
     }
-
+    public UserVo(User user) {
+        this.setUid(user.getUid());
+        this.setUsername(user.getUsername());
+        this.setEmail(user.getEmail());
+        this.setPassword(user.getPassword());
+        this.setAge(user.getAge());
+        this.setCredit(user.getCredit());
+        this.setSex(user.getSex());
+        this.setTel(user.getTel());
+        this.setTouxiang(user.getTouxiang());
+        this.setQianming(user.getQianming());
+    }
     public String getCode() {
         return code;
     }

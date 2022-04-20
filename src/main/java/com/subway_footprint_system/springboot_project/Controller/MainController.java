@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -29,6 +30,9 @@ public class MainController {
         private EMailServiceImpl eMailService;
         @Autowired
         private LightedStationServiceImpl lightedStationService;
+        @Autowired
+        private CreditRecordServiceImpl creditRecordService;
+
 
     @CrossOrigin
     @RequestMapping("/hello")
@@ -230,6 +234,7 @@ public class MainController {
             String uid = decodedJWT.getClaim("uid").asString();
             return ResultFactory.buildSuccessResult(userService.getUserByUid(uid));
         }catch (Exception e){
+            e.printStackTrace();
             return ResultFactory.buildFailResult("登陆状态异常！");
         }
     }
@@ -257,15 +262,16 @@ public class MainController {
             }
             return ResultFactory.buildFailResult("更改个人信息失败！");
         }catch (Exception e){
+            e.printStackTrace();
             return ResultFactory.buildFailResult("登陆状态异常！");
         }
 
     }
     /*
      * 请求方式：post
-     * 功能：用户新增点亮站点
+     * 功能：用户新增点亮站点(成功后自动触发增加碳积分)
      * 路径 /user/addLightedStation
-     * 传参(json) pid(站点id) credit(点亮获得碳积分) time(时间)
+     * 传参(json) pid(站点id) credit(点亮获得碳积分)
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
@@ -279,11 +285,22 @@ public class MainController {
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String uid = decodedJWT.getClaim("uid").asString();
             lightedStation.setUid(uid);
+            String time=JWTUtil.getNowTime();
+            lightedStation.setTime(time);
             if (!lightedStationService.insertLightedStation(lightedStation)) {
                 return ResultFactory.buildFailResult("新增点亮站点失败！");
             }
-            return ResultFactory.buildSuccessResult("已成功新增点亮站点！");
+            User user=  userService.getUserByUid(uid);
+            String balance= String.valueOf(Integer.parseInt(user.getCredit())+Integer.parseInt(lightedStation.getCredit()));
+            CreditRecord creditRecord=new CreditRecord(uid+"-"+time,uid,"1","点亮站点获得",lightedStation.getCredit(),balance,time);
+            user.setCredit(creditRecord.getBalance());
+            if (!creditRecordService.insertCreditRecord(creditRecord)||!userService.updateUser(new UserVo(user))) {
+                return ResultFactory.buildFailResult("新增点亮站点成功！增加碳积分失败！");
+            }
+
+            return ResultFactory.buildSuccessResult("已成功新增点亮站点并增加相应碳积分！");
         }catch (Exception e){
+            e.printStackTrace();
             return ResultFactory.buildFailResult("登陆状态异常！");
         }
 
@@ -311,6 +328,7 @@ public class MainController {
             }
             return ResultFactory.buildSuccessResult("已成功删除点亮站点！");
         }catch (Exception e){
+            e.printStackTrace();
             return ResultFactory.buildFailResult("登陆状态异常！");
         }
     }
@@ -337,6 +355,7 @@ public class MainController {
             }
             return ResultFactory.buildSuccessResult("已成功修改点亮站点！");
         }catch (Exception e){
+            e.printStackTrace();
             return ResultFactory.buildFailResult("登陆状态异常！");
         }
 
@@ -360,11 +379,9 @@ public class MainController {
             String uid = decodedJWT.getClaim("uid").asString();
             lightedStation.setUid(uid);
             LightedStation lightedStation1=lightedStationService.getLightedStation(lightedStation.getUid(),lightedStation.getPid());
-            if (lightedStation1==null) {
-                return ResultFactory.buildFailResult("获取点亮站点失败！");
-            }
             return ResultFactory.buildSuccessResult(lightedStation1);
         }catch (Exception e){
+            e.printStackTrace();
             return ResultFactory.buildFailResult("登陆状态异常！");
         }
     }
@@ -388,11 +405,9 @@ public class MainController {
             LightedStation lightedStation=new LightedStation();
             lightedStation.setUid(uid);
             List<LightedStation> list=lightedStationService.getUserLightedStations(lightedStation.getUid());
-            if (null==list) {
-                return ResultFactory.buildFailResult("获取点亮站点失败！");
-            }
             return ResultFactory.buildSuccessResult(list);
         }catch (Exception e){
+            e.printStackTrace();
             return ResultFactory.buildFailResult("登陆状态异常！");
         }
     }
@@ -402,15 +417,69 @@ public class MainController {
      * 路径 /user/getRankingList
      * 传参(json) null
      * 返回值 (json--Result) code,message,data(List<map>)
+     *  map有rank、touxiang、username、credit四个key值
      * */
     @CrossOrigin
     @PostMapping(value ="/user/getRankingList")
     @ResponseBody
     public Result getRankingList(){
         List<Map<String, String>> list = userService.getRankingList();
-        if (null==list) {
-            return ResultFactory.buildFailResult("获取碳积分排行榜失败！");
-        }
         return ResultFactory.buildSuccessResult(list);
+    }
+    /*
+     * 请求方式：post
+     * 功能：获取碳积分历史
+     * 路径 /user/getUserCreditRecords
+     * 传参(json) null
+     * 返回值 (json--Result) code,message,data(List<CreditRecord>)
+     * */
+    @CrossOrigin
+    @PostMapping(value ="/user/getUserCreditRecords")
+    @ResponseBody
+    public Result getUserCreditRecords(HttpServletRequest request){
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String uid = decodedJWT.getClaim("uid").asString();
+            List<CreditRecord> list=creditRecordService.getUserCreditRecords(uid);
+            return ResultFactory.buildSuccessResult(list);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultFactory.buildFailResult("登陆状态异常！");
+        }
+    }
+    /*
+     * 请求方式：post
+     * 功能：新增一条碳积分记录（点亮站点获得碳积分会自动调用该接口，注意不要重复调用）
+     * 路径 /user/addCreditRecord
+     * 传参(json) operation,way,num
+     * 返回值 (json--Result) code,message,data(str)
+     * */
+    @CrossOrigin
+    @PostMapping(value ="/user/addCreditRecord")
+    @ResponseBody
+    public Result addCreditRecord(HttpServletRequest request,@Valid @RequestBody CreditRecord creditRecord){
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String uid = decodedJWT.getClaim("uid").asString();
+            creditRecord.setUid(uid);
+            creditRecord.setTime(JWTUtil.getNowTime());
+            creditRecord.setCrid((creditRecord.getUid()+"-"+creditRecord.getTime()));
+            User user=  userService.getUserByUid(uid);
+            creditRecord.setBalance(String.valueOf(Integer.parseInt(user.getCredit())+Integer.parseInt(creditRecord.getNum())));
+            user.setCredit(creditRecord.getBalance());
+            if (!creditRecordService.insertCreditRecord(creditRecord)||!userService.updateUser(new UserVo(user))) {
+                return ResultFactory.buildFailResult("新增碳积分记录失败！");
+            }
+            return ResultFactory.buildSuccessResult("新增碳积分记录成功！");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultFactory.buildFailResult("登陆状态异常！");
+        }
     }
 }

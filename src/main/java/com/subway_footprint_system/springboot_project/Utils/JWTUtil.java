@@ -5,8 +5,11 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class JWTUtil {
 
@@ -41,4 +44,10 @@ public class JWTUtil {
     public static DecodedJWT getTokenInfo(String token) {
         return JWT.require(Algorithm.HMAC256(SECRET)).build().verify(token);
     }
+    public static String getNowTime(){
+        Calendar calendar = Calendar.getInstance(Locale.CHINA);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
+        return formatter.format(calendar.getTime());
+    }
+
 }
