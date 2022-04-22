@@ -4,17 +4,26 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.omg.CORBA.Environment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
-
+@Configuration
 public class JWTUtil {
 
     // 用于JWT进行签名加密的秘钥
-    private static String SECRET = "subway_footprint*%#@*!&";
+    private static String SECRET;
+
+    @Value("${jwt.secret}")//从配置文件里读取
+    public void setSECRET(String SECRET) {
+        this.SECRET = SECRET;
+    }
+
 
     /**
      * @Param: 传入需要设置的payload信息

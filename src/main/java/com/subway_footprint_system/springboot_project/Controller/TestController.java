@@ -1,9 +1,10 @@
 package com.subway_footprint_system.springboot_project.Controller;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
 import com.subway_footprint_system.springboot_project.Pojo.*;
-import com.subway_footprint_system.springboot_project.Service.Impl.*;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
+import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
@@ -41,4 +42,20 @@ public class TestController {
         map.put("data",object.toString());
         return map;
     }
+    @Autowired
+    private StringEncryptor encryptor;
+
+    /**
+     * 手动生成密文
+     * @param str 原文
+     * @return Result data里为密文
+     */
+    @CrossOrigin
+    @RequestMapping("/encrypt")
+    public Result encrypt(String str){
+        String s=encryptor.encrypt(str);
+        System.out.println("密文：" +s );
+        return ResultFactory.buildSuccessResult(s);
+    }
+
 }
