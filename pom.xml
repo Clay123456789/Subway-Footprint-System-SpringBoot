@@ -37,6 +37,12 @@
             <artifactId>tomcat-embed-jasper</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!--图片压缩-->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.8</version>
+        </dependency>
         <!-- 数据脱敏 -->
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
