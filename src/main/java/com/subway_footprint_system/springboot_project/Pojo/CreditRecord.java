@@ -1,6 +1,16 @@
 package com.subway_footprint_system.springboot_project.Pojo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data//该注解会自动生成set/get方法，toString方法，equals方法，hashCode方法
+@Builder //产生复杂的构建器api类,注意子类和父类会冲突
+@NoArgsConstructor//不带参数的构造方法
+@AllArgsConstructor//全构造方法
 public class CreditRecord {
+
     private String crid;//碳积分流水记录id
     private String uid;//用户id
     private String operation;//操作类型（获得1/消耗0）
@@ -9,72 +19,4 @@ public class CreditRecord {
     private String balance;//剩余碳积分数目
     private String time;//操作时间
 
-    public CreditRecord() {
-    }
-
-    public CreditRecord(String crid, String uid, String operation, String way, String num, String balance, String time) {
-        this.crid = crid;
-        this.uid = uid;
-        this.operation = operation;
-        this.way = way;
-        this.num = num;
-        this.balance = balance;
-        this.time = time;
-    }
-
-    public String getCrid() {
-        return crid;
-    }
-
-    public void setCrid(String crid) {
-        this.crid = crid;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public String getOperation() {
-        return operation;
-    }
-
-    public void setOperation(String operation) {
-        this.operation = operation;
-    }
-
-    public String getWay() {
-        return way;
-    }
-
-    public void setWay(String way) {
-        this.way = way;
-    }
-
-    public String getNum() {
-        return num;
-    }
-
-    public void setNum(String num) {
-        this.num = num;
-    }
-
-    public String getBalance() {
-        return balance;
-    }
-
-    public void setBalance(String balance) {
-        this.balance = balance;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
 }

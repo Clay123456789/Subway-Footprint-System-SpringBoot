@@ -1,10 +1,13 @@
 package com.subway_footprint_system.springboot_project.Utils;
 
 
-//使用AOP统一处理Web请求日志
+//使用AOP统一处理请求日志
 
 
+import com.alibaba.fastjson.JSON;
+import com.subway_footprint_system.springboot_project.Pojo.Result;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.groovy.GJson;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -34,20 +37,12 @@ public class WebControllerAop {
      */
     @Before("webLog()")
     public void doBefore(JoinPoint joinPoint){
-        log.info("我是前置通知!!!");
+        log.info("新的接口被调用了!!!");
         //获取目标方法的参数信息
         Object[] obj = joinPoint.getArgs();
         Signature signature = joinPoint.getSignature();
         //代理的是哪一个方法
-        log.info("方法："+signature.getName());
-        //AOP代理类的名字
-        log.info("方法所在包:"+signature.getDeclaringTypeName());
-        //AOP代理类的类（class）信息
-        signature.getDeclaringType();
-        MethodSignature methodSignature = (MethodSignature) signature;
-        String[] strings = methodSignature.getParameterNames();
-        log.info("参数名："+ Arrays.toString(strings));
-        log.info("参数值ARGS : " + Arrays.toString(joinPoint.getArgs()));
+        log.info("接口名："+signature.getName());
         // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest req = attributes.getRequest();
@@ -55,7 +50,13 @@ public class WebControllerAop {
         log.info("请求URL : " + req.getRequestURL().toString());
         log.info("HTTP_METHOD : " + req.getMethod());
         log.info("IP : " + req.getRemoteAddr());
-        log.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+        log.info("接口具体信息:"+signature.toString());
+        //AOP代理类的类（class）信息
+        signature.getDeclaringType();
+        MethodSignature methodSignature = (MethodSignature) signature;
+        String[] strings = methodSignature.getParameterNames();
+        log.info("参数名："+ Arrays.toString(strings));
+        log.info("参数值ARGS : " + Arrays.toString(joinPoint.getArgs()));
 
     }
 
@@ -67,7 +68,11 @@ public class WebControllerAop {
     @AfterReturning(returning = "ret", pointcut = "webLog()")
     public void doAfterReturning(Object ret) throws Throwable {
         // 处理完请求，返回内容
-        log.info("方法的返回值 : " + ret);
+        if(ret instanceof Result){
+            log.info("接口的返回值 : " + JSON.toJSONString(ret));
+            return;
+        }
+        log.info("接口的返回值 : " + ret);
     }
 
     /**
@@ -76,7 +81,7 @@ public class WebControllerAop {
      */
     @AfterThrowing("webLog()")
     public void throwss(JoinPoint jp){
-        log.info("方法异常时执行.....");
+        log.info("接口异常时执行.....");
     }
 
     /**
