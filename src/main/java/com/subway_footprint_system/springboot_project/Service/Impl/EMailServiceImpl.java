@@ -109,12 +109,12 @@ public class EMailServiceImpl implements IEMailService {
     }
     @Override
     public boolean findPassword_sendEmail(String email) {
-        if(userService.getUserByEmail(new User(email).getEmail())!=null){
+        if(userService.getUserByEmail(email)!=null){
             try {
                 SimpleMailMessage mailMessage = new SimpleMailMessage();
                 mailMessage.setSubject("找回密码邮件");//主题
                 //保存密码
-                String password=userService.getUserByEmail(new User(email).getEmail()).getPassword();
+                String password=userService.getUserByEmail(email).getPassword();
                 mailMessage.setText("您的密码是："+ password);
 
                 mailMessage.setTo(email);//发给谁

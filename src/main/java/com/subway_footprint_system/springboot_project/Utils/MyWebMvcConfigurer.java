@@ -16,6 +16,7 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
                 .excludePathPatterns("/user/login")
                 .excludePathPatterns("/user/sendRegistEmail")
                 .excludePathPatterns("/user/findPassword")
+                .excludePathPatterns("/encrypt")
                 .addPathPatterns("/**"); // 其他非登录接口都需要进行token验证
     }
 }

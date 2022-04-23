@@ -75,11 +75,6 @@
             <version>1.18.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
         <!-- springboot2.0.1 cache -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -120,7 +115,13 @@
             <artifactId>mybatis-plus-generator</artifactId>
             <version>3.3.2</version>
         </dependency>
-
+        <!-- ftp begin -->
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.5</version>
+        </dependency>
+        <!-- ftp end -->
         <!--逆向工程需要模板引擎-->
         <dependency>
             <groupId>org.freemarker</groupId>
@@ -164,7 +165,6 @@
             <groupId>org.xmlunit</groupId>
             <artifactId>xmlunit-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>

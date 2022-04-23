@@ -1,5 +1,15 @@
 package com.subway_footprint_system.springboot_project.Pojo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+@Data//使用后该类无法被继承，该注解会自动生成set/get方法，toString方法，equals方法，hashCode方法
+@Builder //产生复杂的构建器api类
+@NoArgsConstructor//不带参数的构造方法
+@AllArgsConstructor//全构造方法
 public class Result {
     /**
      * 响应状态码
@@ -14,34 +24,5 @@ public class Result {
      */
     private Object data;
 
-    public Result(int code, String message, Object data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Object getData() {
-        return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
 
 }

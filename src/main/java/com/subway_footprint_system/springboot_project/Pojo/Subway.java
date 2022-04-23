@@ -1,11 +1,16 @@
 package com.subway_footprint_system.springboot_project.Pojo;
-import com.alibaba.fastjson.JSON;
-import com.google.gson.Gson;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Data//该注解会自动生成set/get方法，toString方法，equals方法，hashCode方法
+@Builder //产生复杂的构建器api类,注意子类和父类会冲突
+@NoArgsConstructor//不带参数的构造方法
+@AllArgsConstructor//全构造方法
 public class Subway {
     private String sid;//code_lid拼接,作为主键
     private int code;//城市代码
@@ -15,72 +20,4 @@ public class Subway {
     private Map<String, Object> l_xmlattr;//地铁线路信息
     private List<Map<String, Object>> p;//地铁线路所有站点数组信息
 
-    public Subway() {
-    }
-
-    public Subway(String sid, int code, String cn_name, String cename, String cpre, Map<String, Object> l_xmlattr, List<Map<String, Object>> p) {
-        this.sid = sid;
-        this.code = code;
-        this.cn_name = cn_name;
-        this.cename = cename;
-        this.cpre = cpre;
-        this.l_xmlattr = l_xmlattr;
-        this.p = p;
-    }
-
-    public String getSid() {
-        return sid;
-    }
-
-    public void setSid(String sid) {
-        this.sid = sid;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getCn_name() {
-        return cn_name;
-    }
-
-    public void setCn_name(String cn_name) {
-        this.cn_name = cn_name;
-    }
-
-    public String getCename() {
-        return cename;
-    }
-
-    public void setCename(String cename) {
-        this.cename = cename;
-    }
-
-    public String getCpre() {
-        return cpre;
-    }
-
-    public void setCpre(String cpre) {
-        this.cpre = cpre;
-    }
-
-    public Map<String, Object> getL_xmlattr() {
-        return l_xmlattr;
-    }
-
-    public void setL_xmlattr(Map<String, Object> l_xmlattr) {
-        this.l_xmlattr = l_xmlattr;
-    }
-
-    public List<Map<String, Object>> getP() {
-        return p;
-    }
-
-    public void setP(List<Map<String, Object>> p) {
-        this.p = p;
-    }
 }

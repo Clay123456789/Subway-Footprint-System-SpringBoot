@@ -160,7 +160,7 @@ public class LightStationController {
             // 根据token解析出uid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String uid = decodedJWT.getClaim("uid").asString();
-            LightedStation lightedStation=new LightedStation();
+            LightedStation lightedStation=LightedStation.builder().build();
             lightedStation.setUid(uid);
             List<LightedStation> list=lightedStationService.getUserLightedStations(lightedStation.getUid());
             return ResultFactory.buildSuccessResult(list);
