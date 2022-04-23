@@ -4,9 +4,9 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
 import com.subway_footprint_system.springboot_project.Pojo.*;
 import com.subway_footprint_system.springboot_project.Service.Impl.TreasureServiceImpl;
-import com.subway_footprint_system.springboot_project.Utils.FtpConfig;
 import com.subway_footprint_system.springboot_project.Utils.FtpUtil;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +25,12 @@ import java.util.*;
  * 在这可以写一些测试接口
  *
  */
+@Slf4j
 @EnableAutoConfiguration
 @RestController
 public class TestController {
     @Autowired
     private TreasureServiceImpl treasureService;
-    @Autowired
-    FtpConfig ftpConfig;
     /*
      * 请求方式：post
      * 功能：用户/商户藏宝
@@ -99,38 +98,11 @@ public class TestController {
     @RequestMapping("/encrypt")
     public Result encrypt(String str){
         String s=encryptor.encrypt(str);
-        System.out.println("密文：" +s );
+        log.info("密文：" +s );
+        //System.out.println("密文：" +s );
         System.out.println("原文：" +encryptor.decrypt(s) );
 
         return ResultFactory.buildSuccessResult(s);
     }
-    /*
-     * 上传file
-     * 路径 /api/uploadFiles
-     * 传参(MultipartFile) files
-     * 返回值(json--Result) code,message,data(List<String> urlList)
-     * */
-    @CrossOrigin
-    @PostMapping(value ="/uploadFiles")
-    @ResponseBody
-    public Result uploadFiles(@RequestParam("files") MultipartFile[] mfiles) throws IOException {
-        List<File>files=new ArrayList<>();
-        for (MultipartFile mfile :mfiles) {
-            File file = new File(mfile.getOriginalFilename());
-            FileUtils.copyInputStreamToFile(mfile.getInputStream(), file);
-            files.add(file);
-        }
 
-        List<String> urlList= FtpUtil.ftpUpload(files,ftpConfig.getUrl(),ftpConfig.getPort(),ftpConfig.getUsername(),
-                ftpConfig.getPassword(), ftpConfig.getRemotePath());
-        for (File file:files) {
-            if(file.exists()){
-                file.delete();
-            }
-        }
-        if (urlList!=null)
-            return ResultFactory.buildSuccessResult(urlList);
-
-        return ResultFactory.buildFailResult("上传失败");
-    }
 }
