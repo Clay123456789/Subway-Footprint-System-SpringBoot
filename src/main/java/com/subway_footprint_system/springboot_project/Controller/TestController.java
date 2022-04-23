@@ -7,6 +7,7 @@ import com.subway_footprint_system.springboot_project.Service.Impl.TreasureServi
 import com.subway_footprint_system.springboot_project.Utils.FtpConfig;
 import com.subway_footprint_system.springboot_project.Utils.FtpUtil;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import java.util.*;
  * 在这可以写一些测试接口
  *
  */
+@Slf4j
 @EnableAutoConfiguration
 @RestController
 public class TestController {
@@ -32,39 +34,9 @@ public class TestController {
     private TreasureServiceImpl treasureService;
     @Autowired
     FtpConfig ftpConfig;
-    /*
-     * 请求方式：post
-     * 功能：用户/商户藏宝
-     * 路径 /user/buryTreasure
-     * 传参(json) variety(宝箱种类) content(宝箱内容) credit(打开所需碳积分) pid(站点id)
-     * 返回值 (json--Result) code,message,data(str)
-     * */
-    @CrossOrigin
-    @PostMapping(value ="/user/buryTreasure")
-    @ResponseBody
-    public Result addLightedStation(HttpServletRequest request, @Valid @RequestBody Treasure treasure){
-        try {
-            //获取请求头中的token令牌
-            String token = request.getHeader("token");
-            // 根据token解析出uid;
-            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
-            String uid = decodedJWT.getClaim("uid").asString();
-            treasure.setUid(uid);
-            String time=JWTUtil.getNowTime();
-            treasure.setFromdate(time);
-            treasure.setTid(uid+'-'+time);
-            treasure.setStatus(0);
-            if(!treasureService.insertTreasure(treasure)){
-                return ResultFactory.buildFailResult("藏宝失败！");
-            }
-            return ResultFactory.buildFailResult("藏宝成功！");
 
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
-        }
 
-    }
+
 
     @CrossOrigin
     @RequestMapping("/hello")
@@ -99,9 +71,8 @@ public class TestController {
     @RequestMapping("/encrypt")
     public Result encrypt(String str){
         String s=encryptor.encrypt(str);
-        System.out.println("密文：" +s );
-        System.out.println("原文：" +encryptor.decrypt(s) );
-
+//        System.out.println("密文：" +s );
+//        System.out.println("原文：" +encryptor.decrypt(s) );
         return ResultFactory.buildSuccessResult(s);
     }
     /*

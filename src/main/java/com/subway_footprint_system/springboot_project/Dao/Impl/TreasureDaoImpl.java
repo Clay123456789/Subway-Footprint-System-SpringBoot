@@ -89,13 +89,14 @@ public class TreasureDaoImpl implements ITreasureDao {
     }
     /**
      * 获取指定站点pid的所有记录
+     *  查询的是未被挖走的宝箱
      */
     @Override
     public List<Treasure> getPositionTreasure(String pid) {
         List<Treasure> list=null;
         try {
             RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
-            list =jdbcTemplate.query("select * from treasure where pid=? order by fromdate ASC",rowMapper,pid);
+            list =jdbcTemplate.query("select * from treasure where pid=? and status=0 order by fromdate ASC",rowMapper,pid);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -104,17 +105,37 @@ public class TreasureDaoImpl implements ITreasureDao {
     }
     /**
      * 获取所有记录
+     * 查询的是未被挖走的宝箱
      */
     @Override
     public List<Treasure> getAllTreasure() {
         List<Treasure> list=null;
         try {
             RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
-            list =jdbcTemplate.query("select * from treasure order by fromdate ASC",rowMapper);
+            list =jdbcTemplate.query("select * from treasure where status=0 order by fromdate ASC",rowMapper);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
         return list;
     }
+
+    @Override
+    public List<Treasure> getUserTreasure(String uid2) {
+        List<Treasure> list=null;
+        try {
+            RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
+            list =jdbcTemplate.query("select * from treasure where status=1 and uid2=? order by getdate ASC",rowMapper,uid2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return list;
+    }
+
+    /**
+     * 获取某一用户的记录
+     * 查询的是未打开的宝箱
+     */
+
 }
