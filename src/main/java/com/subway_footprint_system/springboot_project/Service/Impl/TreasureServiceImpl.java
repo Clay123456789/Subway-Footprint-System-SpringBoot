@@ -42,4 +42,9 @@ public class TreasureServiceImpl implements ITreasureService {
     public List<Treasure> getAllTreasure() {
         return treasureDao.getAllTreasure();
     }
+
+    @Override
+    public List<Treasure> getUserTreasure(String uid2) {
+        return treasureDao.getUserTreasure(uid2);
+    }
 }

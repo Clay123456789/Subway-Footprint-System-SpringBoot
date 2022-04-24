@@ -12,4 +12,5 @@ public interface ITreasureService {
     Treasure getTreasure(String tid);
     List<Treasure> getPositionTreasure(String pid);
     List<Treasure> getAllTreasure();
+    List<Treasure> getUserTreasure(String uid2);
 }
