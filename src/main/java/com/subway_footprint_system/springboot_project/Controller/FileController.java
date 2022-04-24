@@ -20,7 +20,8 @@ public class FileController {
     @Autowired
     private FtpUtil ftpUtil;
     /*
-     * 上传files
+     * 请求方式：post
+     * 功能：上传files
      * 路径 /file/uploadFiles
      * 传参(MultipartFile) files
      * 返回值(json--Result) code,message,data(List<String> urlList)
