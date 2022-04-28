@@ -29,7 +29,7 @@ public class CreditRecordServiceImpl implements ICreditRecordService {
     }
 
     @Override
-    public List<CreditRecord> getUserCreditRecords(String uid) {
-        return creditRecordDao.getUserCreditRecords(uid);
+    public List<CreditRecord> getUserCreditRecords(String uid,int group) {
+        return creditRecordDao.getUserCreditRecords(uid,group);
     }
 }

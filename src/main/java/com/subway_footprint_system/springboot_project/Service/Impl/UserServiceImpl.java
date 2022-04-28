@@ -111,13 +111,13 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<Map<String, String>> getRankingList() {
+    public List<Map<String, Object>> getRankingList() {
 
         List<User> users=userDao.getRankingList();
-        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         for (int i = 0; i < users.size(); i++) {
-            Map<String,String> map=new HashMap<>();
-            map.put("rank",i+1+"");
+            Map<String,Object> map=new HashMap<>();
+            map.put("rank",i+1);
             map.put("touxiang",users.get(i).getTouxiang());
             map.put("username",users.get(i).getUsername());
             map.put("credit",users.get(i).getCredit());
@@ -127,4 +127,7 @@ public class UserServiceImpl implements IUserService {
     }
 
 
+    public int getPersonalCreditRank(String uid) {
+        return userDao.getPersonalCreditRank(uid);
+    }
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Repository
@@ -212,5 +213,31 @@ public class UserDaoImpl implements IUserDao {
             return null;
         }
         return list;
+    }
+
+    public int getPersonalCreditRank(String uid) {
+        int credit=0;
+        String sql="SELECT obj_new.rownum FROM(SELECT obj.uid,obj.credit," +
+                "            @rownum := @rownum + 1 AS num_tmp," +
+                "            @incrnum := CASE" +
+                "        WHEN @rowtotal = obj.credit THEN" +
+                "            @incrnum" +
+                "        WHEN @rowtotal := obj.credit THEN" +
+                "            @rownum" +
+                "        END AS rownum" +
+                "        FROM(SELECT uid,credit FROM `user` ORDER BY credit DESC) " +
+                "   AS obj,(SELECT @rownum := 0 ,@rowtotal := NULL ,@incrnum := 0) r)" +
+                " AS obj_new ";
+
+
+        try{
+            Map<String, Object> map = jdbcTemplate.queryForMap(sql+"where uid=?", uid);
+            System.out.println(map.size());
+            credit= Integer.parseInt(map.get("rownum").toString());
+        }catch(Exception e){
+            e.printStackTrace();
+            return credit;
+        }
+        return credit;
     }
 }
