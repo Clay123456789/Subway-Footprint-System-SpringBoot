@@ -16,7 +16,7 @@ public class UserVo extends User{
 
     //重新构造一个builder，以免和父类冲突
     @Builder(builderMethodName = "childBuilder")
-    public UserVo(String uid, String username, String password, String email, int age, String sex, String tel, String touxiang, String qianming, String credit, String code, String newEmail, String newPassword) {
+    public UserVo(String uid, String username, String password, String email, int age, String sex, String tel, String touxiang, String qianming, int credit, String code, String newEmail, String newPassword) {
         super(uid, username, password, email, age, sex, tel, touxiang, qianming, credit);
         this.code = code;
         this.newEmail = newEmail;

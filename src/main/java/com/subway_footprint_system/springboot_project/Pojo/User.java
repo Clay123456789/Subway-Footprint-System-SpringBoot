@@ -17,5 +17,5 @@ public class User {
     //用户头像，以url存储
     private String touxiang;
     private String qianming;
-    private String credit;///碳积分数目
+    private int credit;///碳积分数目
 }

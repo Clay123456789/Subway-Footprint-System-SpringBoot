@@ -170,9 +170,9 @@ public class UserController {
 
     /*
      * 请求方式：post
-     * 功能：修改用户信息（不包含修改用户uid、密码、和邮箱）
+     * 功能：修改用户信息（不包含修改用户uid、密码、和邮箱,以及碳积分）
      * 路径 /user/updateUser
-     * 传参(json) （修改后的的User各属性）username,age,sex,tel,touxiang,qianming,credit
+     * 传参(json) （修改后的的User各属性）username,age,sex,tel,touxiang,qianming
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
@@ -186,6 +186,7 @@ public class UserController {
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String uid = decodedJWT.getClaim("uid").asString();
             userVo.setUid(uid);
+            userVo.setCredit(userService.getUserByUid(uid).getCredit());
             if (userService.updateUser(userVo)) {
                 return ResultFactory.buildSuccessResult("已成功修个人信息！");
             }

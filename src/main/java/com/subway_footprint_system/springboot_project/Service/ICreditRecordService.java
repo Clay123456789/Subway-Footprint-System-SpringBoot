@@ -9,6 +9,6 @@ public interface ICreditRecordService {
     boolean insertCreditRecord(CreditRecord creditRecord);
     boolean deleteCreditRecord(String crid);
     CreditRecord getCreditRecord(String crid);
-    List<CreditRecord> getUserCreditRecords(String uid);
+    List<CreditRecord> getUserCreditRecords(String uid,int group);
 
 }
