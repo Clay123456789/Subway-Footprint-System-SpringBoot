@@ -156,4 +156,25 @@ public class FileController {
         return ResultFactory.buildFailResult("上传失败");
     }
 
+
+    /*
+     * 请求方式：get
+     * 功能：获取原图(头像）
+     * 路径 /file/getOriginalImage
+     * 传参(String) url
+     * 返回值(json--Result) code,message,data(url)
+     * */
+    @CrossOrigin
+    @RequestMapping(value = "/file/getOriginalImage", method = RequestMethod.GET)
+    public Result getOriginalImage( String url){
+        String originalImagePath=null;
+        try {
+            originalImagePath=ftpUtil.getOriginalImage(url);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultFactory.buildFailResult("获取失败！");
+        }
+        return ResultFactory.buildSuccessResult(originalImagePath);
+    }
+
 }
