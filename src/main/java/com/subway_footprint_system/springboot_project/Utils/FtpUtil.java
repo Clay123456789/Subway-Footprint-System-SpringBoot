@@ -230,7 +230,7 @@ public class FtpUtil {
 					remoteSize = mFtpFile.getSize();
 					if (remoteSize == localFile.length()) {
 						if(urllist.indexOf(remoteFilePath)<0){
-							urllist.add("http://"+host+":"+accessPort+remoteFilePath);
+							urllist.add(getFtpPath()+fileName);
 						}
 						log.info("文件"+ localFile.getName()+"已经上传成功");
 						continue;
@@ -243,7 +243,7 @@ public class FtpUtil {
 							boolean isUpload = uploadlocalFile(remoteFilePath, localFile, 0);
 							if(isUpload&&urllist.indexOf(remoteFilePath)<0){
 								deleteCompressImage(remotePath,fileName);
-								urllist.add("http://"+host+":"+accessPort+remoteFilePath);
+								urllist.add(getFtpPath()+fileName);
 							}
 							log.info( localFile.getName()+"是否上传成功：" + isUpload);
 							continue;
@@ -253,7 +253,7 @@ public class FtpUtil {
 						log.info("文件"+ localFile.getName()+"上传成功");
 						if(urllist.indexOf(remoteFilePath)<0){
 							deleteCompressImage(remotePath,fileName);
-							urllist.add("http://"+host+":"+accessPort+remoteFilePath);
+							urllist.add(getFtpPath()+fileName);
 						}
 						continue;
 					} else {
@@ -265,7 +265,7 @@ public class FtpUtil {
 							log.info("是否上传"+ localFile.getName()+"成功：" + isUpload);
 							if(isUpload&&urllist.indexOf(remoteFilePath)<0){
 								deleteCompressImage(remotePath,fileName);
-								urllist.add("http://"+host+":"+accessPort+remoteFilePath);
+								urllist.add(getFtpPath()+fileName);
 							}
 							continue;
 						}
@@ -277,7 +277,7 @@ public class FtpUtil {
 			log.info("是否上传"+ localFile.getName()+"成功：" + isUpload);
 			if(isUpload&&urllist.indexOf(remoteFilePath)<0){
 				deleteCompressImage(remotePath,fileName);
-				urllist.add("http://"+host+":"+accessPort+remoteFilePath);
+				urllist.add(getFtpPath()+fileName);
 			}
 		}
 
@@ -401,8 +401,7 @@ public class FtpUtil {
 		// 以二进制进行传输数据
 		mFTPClient.setFileType(FTP.BINARY_FILE_TYPE);
 		for (String fileName:fileNames) {
-			String newFileName=appendSuffix(fileName,SUFFIX,scale);
-			String compressedFilePath=remotePath+"/"+newFileName;
+			String newFileName=appendSuffix(ReduceRandomKey(fileName),SUFFIX,scale);
 			if (remotePath.contains("/")) {
 				boolean isCreateOk = createDirectory(remotePath, mFTPClient);
 				if (!isCreateOk) {
@@ -416,8 +415,8 @@ public class FtpUtil {
 				int i = 0;
 				for (; i <ftpFiles.length ; i++) {
 					if (ftpFiles[i].getName().endsWith(newFileName)) {//略缩图已存在
-						if(urllist.indexOf(ReduceRandomKey(compressedFilePath))<0){
-							urllist.add("http://"+host+":"+accessPort+compressedFilePath);
+						if(urllist.indexOf(getFtpPath()+newFileName)<0){
+							urllist.add(getFtpPath()+newFileName);
 						}
 						break;
 					}
@@ -520,7 +519,7 @@ public class FtpUtil {
 		if(indexofkey>0){
 			return Key.substring(0,indexofkey)+encryptor.decrypt(Key.substring(indexofkey));
 		}
-		return encryptor.decrypt(Key.substring(indexofkey));
+		return encryptor.decrypt(Key);
 	}
 	/**
 	 * 文件名附加一个随机数
@@ -547,11 +546,7 @@ public class FtpUtil {
 		String newFileName = "";
 
 		int indexOfSUFFIX = fileName.lastIndexOf(SUFFIX);
-		if (indexOfSUFFIX != -1) {//若为略缩图
-			newFileName = fileName.substring(0, indexOfSUFFIX);
-			newFileName = getRandomBykey(newFileName);
-			newFileName += fileName.substring(indexOfSUFFIX);
-		} else {//为原图
+		if (indexOfSUFFIX == -1) {//为原图
 			int indexOfDot = fileName.lastIndexOf('.');
 			if (indexOfDot != -1) {
 				newFileName = fileName.substring(0, indexOfDot);
@@ -621,6 +616,67 @@ public class FtpUtil {
 
 	public String getFileExtention(String fileName) {
 		return fileName.substring(fileName.lastIndexOf(".") + 1);
+	}
+	public String getOriginalImage(String path) throws IOException {
+		if(path.contains(getFtpPath())){
+			String fileName=path.replace(getFtpPath(),"");
+			if(isImage(getFileExtention(fileName))&&fileName.contains(SUFFIX)){
+				//验证是否为服务器上的略缩图
+				boolean isConnection = openConnection();
+				if (isConnection) {
+					// 进入被动模式
+					mFTPClient.enterLocalPassiveMode();
+					// 以二进制进行传输数据
+					mFTPClient.setFileType(FTP.BINARY_FILE_TYPE);
+						if (remotePath.contains("/")) {
+							boolean isCreateOk = createDirectory(remotePath, mFTPClient);
+							if (!isCreateOk) {
+								log.info("文件夹创建失败");
+								logout();
+								return null;
+							}
+						}
+
+						// 列出ftp服务器上的文件
+						FTPFile[] ftpFiles = mFTPClient.listFiles(remotePath);
+						if (ftpFiles.length > 0) {
+							FTPFile mFtpFile = null;
+							for (FTPFile ftpFile : ftpFiles) {
+								if (ftpFile.getName().endsWith(fileName)) {
+									mFtpFile = ftpFile;
+									break;
+								}
+							}
+							if (mFtpFile != null) {
+								//确认为当前ftp的略缩图，进行解析，得到原图
+								int indexOfSUFFIX = fileName.lastIndexOf(SUFFIX);
+								int indexOfs =fileName.substring(0,indexOfSUFFIX).lastIndexOf("-");
+								String fileName1=fileName.substring(0,indexOfs);
+								String random=fileName.substring(indexOfs+1,indexOfSUFFIX);
+								for (FTPFile ftpFile : ftpFiles) {
+									if (ftpFile.getName().contains(fileName1)&&!ftpFile.getName().contains(SUFFIX)) {
+										int indexOfDot =ftpFile.getName().lastIndexOf(".");
+										int indexOfjian =ftpFile.getName().lastIndexOf("-");
+										String key=ftpFile.getName().substring(indexOfjian+1,indexOfDot);
+										if(encryptor.decrypt(key).equals(random)){//找到原图
+											logout();
+											return getFtpPath()+ftpFile.getName();
+										}
+									}
+								}
+								return null;
+							}
+
+						}
+
+					}
+				logout();
+			}
+		}
+		return null;
+	}
+	public String getFtpPath(){
+		return "http://"+host+":"+accessPort+remotePath+"/";
 	}
 
 }
