@@ -22,5 +22,5 @@ public class Treasure {
     private String mid; //商户id
     private String uid2; //挖宝用户id
     private String getdate; //挖宝时间
-
+    private String message; //留言
 }
