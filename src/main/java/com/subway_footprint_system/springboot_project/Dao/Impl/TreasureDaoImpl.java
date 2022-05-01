@@ -28,8 +28,8 @@ public class TreasureDaoImpl implements ITreasureDao {
     public boolean insertTreasure(Treasure treasure){
         try{
             //返回影响行数，为1即增加成功
-            int result = jdbcTemplate.update("insert into treasure(tid,variety,content,credit,pid,fromdate,todate,status,uid,mid,uid2,getdate) values(?,?,?,?,?,?,?,?,?,?,?,?) ",
-            treasure.getTid(),treasure.getVariety(),treasure.getContent(),treasure.getCredit(),treasure.getPid(),treasure.getFromdate(),treasure.getTodate(),treasure.getStatus(),treasure.getUid(),treasure.getMid(),treasure.getUid2(),treasure.getGetdate());
+            int result = jdbcTemplate.update("insert into treasure(tid,variety,content,credit,pid,fromdate,todate,status,uid,mid,uid2,getdate,message) values(?,?,?,?,?,?,?,?,?,?,?,?,?) ",
+            treasure.getTid(),treasure.getVariety(),treasure.getContent(),treasure.getCredit(),treasure.getPid(),treasure.getFromdate(),treasure.getTodate(),treasure.getStatus(),treasure.getUid(),treasure.getMid(),treasure.getUid2(),treasure.getGetdate(),treasure.getMessage());
             if(1==result) {
                 return true;
             }
@@ -61,8 +61,8 @@ public class TreasureDaoImpl implements ITreasureDao {
     public boolean updateTreasure(Treasure treasure) {
         try {
             //返回影响行数，为1表示修改成功
-            int result=jdbcTemplate.update("update treasure set variety=?,content=?,credit=?,pid=?,fromdate=?,todate=?,status=?,uid=?,mid=?,uid2=?,getdate=? where tid=?",
-                    treasure.getVariety(),treasure.getContent(),treasure.getCredit(),treasure.getPid(),treasure.getFromdate(),treasure.getTodate(),treasure.getStatus(),treasure.getUid(),treasure.getMid(),treasure.getUid2(),treasure.getGetdate(),treasure.getTid());
+            int result=jdbcTemplate.update("update treasure set variety=?,content=?,credit=?,pid=?,fromdate=?,todate=?,status=?,uid=?,mid=?,uid2=?,getdate=?,message=? where tid=?",
+                    treasure.getVariety(),treasure.getContent(),treasure.getCredit(),treasure.getPid(),treasure.getFromdate(),treasure.getTodate(),treasure.getStatus(),treasure.getUid(),treasure.getMid(),treasure.getUid2(),treasure.getGetdate(),treasure.getMessage(),treasure.getTid());
             if(1==result){
                 return true;
             }
