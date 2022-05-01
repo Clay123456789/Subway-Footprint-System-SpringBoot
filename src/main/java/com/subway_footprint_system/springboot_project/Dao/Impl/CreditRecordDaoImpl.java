@@ -78,11 +78,11 @@ public class CreditRecordDaoImpl implements ICreditRecordDao {
      * 获取指定uid的所有记录
      * */
     @Override
-    public List<CreditRecord> getUserCreditRecords(String uid) {
+    public List<CreditRecord> getUserCreditRecords(String uid,int group) {
         List<CreditRecord> list=null;
         try {
             RowMapper<CreditRecord> rowMapper = new BeanPropertyRowMapper<CreditRecord>(CreditRecord.class);
-            list= jdbcTemplate.query("select * from credit_record where uid=? order by time ASC",rowMapper,uid);
+            list= jdbcTemplate.query("select * from credit_record where uid=? order by time desc LIMIT ?,?",rowMapper,uid,(group-1)*6,6);
         }catch (Exception e){
             e.printStackTrace();
             return null;

@@ -13,5 +13,5 @@ public class LightedStation {
     private String uid;//用户uid
     private String pid;//点亮的地铁站的uid
     private String time;//点亮的时间
-    private String credit;//点亮获得的碳积分
+    private int credit;//点亮获得的碳积分
 }

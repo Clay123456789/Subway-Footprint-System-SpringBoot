@@ -49,7 +49,7 @@ public class LightStationController {
                 return ResultFactory.buildFailResult("新增点亮站点失败！");
             }
             User user=  userService.getUserByUid(uid);
-            String balance= String.valueOf(Integer.parseInt(user.getCredit())+Integer.parseInt(lightedStation.getCredit()));
+            int balance= user.getCredit()+lightedStation.getCredit();
             CreditRecord creditRecord=new CreditRecord(uid+"-"+time,uid,"1","点亮站点获得",lightedStation.getCredit(),balance,time);
             user.setCredit(creditRecord.getBalance());
             if (!creditRecordService.insertCreditRecord(creditRecord)||!userService.updateUser(new UserVo(user))) {

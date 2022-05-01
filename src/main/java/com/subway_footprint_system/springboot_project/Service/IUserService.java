@@ -31,5 +31,5 @@ public interface IUserService {
     boolean judgeByUsername(UserVo userVo);
     boolean judgeByEmail(UserVo userVo);
     //获取碳积分排行榜
-    List<Map<String, String>> getRankingList();
+    List<Map<String, Object>> getRankingList();
 }

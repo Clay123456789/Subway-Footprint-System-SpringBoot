@@ -5,7 +5,6 @@ import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
 import com.subway_footprint_system.springboot_project.Pojo.Result;
 import com.subway_footprint_system.springboot_project.Pojo.Treasure;
 import com.subway_footprint_system.springboot_project.Service.Impl.TreasureServiceImpl;
-import com.subway_footprint_system.springboot_project.Utils.FtpConfig;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +21,6 @@ import java.util.List;
 public class TreasureController {
     @Autowired
     private TreasureServiceImpl treasureService;
-    @Autowired
-    FtpConfig ftpConfig;
     public void f(){
       //  log.info();
     }
