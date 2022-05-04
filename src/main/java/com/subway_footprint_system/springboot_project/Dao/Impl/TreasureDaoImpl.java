@@ -125,7 +125,7 @@ public class TreasureDaoImpl implements ITreasureDao {
         List<Treasure> list=null;
         try {
             RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
-            list =jdbcTemplate.query("select * from treasure where status=1 and uid2=? order by getdate ASC",rowMapper,uid2);
+            list =jdbcTemplate.query("select * from treasure where uid2=? order by status ASC,getdate ASC",rowMapper,uid2);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
