@@ -24,11 +24,6 @@ public class LightedStationServiceImpl implements ILightedStationService {
     }
 
     @Override
-    public boolean updateLightedStation(LightedStation lightedStation) {
-        return lightedStationDao.updateLightedStation(lightedStation);
-    }
-
-    @Override
     public LightedStation getLightedStation(String uid, String pid) {
         return lightedStationDao.getLightedStation(uid,pid);
     }

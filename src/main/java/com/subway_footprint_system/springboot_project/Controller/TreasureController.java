@@ -28,7 +28,7 @@ public class TreasureController {
      * 请求方式：post
      * 功能：用户/商户藏宝
      * 路径 /user/buryTreasure
-     * 传参(json) variety(宝箱种类) content(宝箱内容) credit(打开所需碳积分) pid(站点id)
+     * 传参(json) aid(若用户选择奖品,其id) variety(宝藏种类) content(宝藏内容) credit(打开所需碳积分) pid(站点id)
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin

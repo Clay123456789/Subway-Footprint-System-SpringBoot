@@ -90,34 +90,7 @@ public class LightStationController {
             return ResultFactory.buildFailResult("登陆状态异常！");
         }
     }
-    /*
-     * 请求方式：post
-     * 功能：用户修改点亮站点获得的碳积分
-     * 路径 /user/updateLightedStation
-     * 传参(json) pid(站点id) credit(积分)
-     * 返回值 (json--Result) code,message,data(str)
-     * */
-    @CrossOrigin
-    @PostMapping(value ="/user/updateLightedStation")
-    @ResponseBody
-    public Result updateLightedStation(HttpServletRequest request,@Valid @RequestBody LightedStation lightedStation){
-        try {
-            //获取请求头中的token令牌
-            String token = request.getHeader("token");
-            // 根据token解析出uid;
-            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
-            String uid = decodedJWT.getClaim("uid").asString();
-            lightedStation.setUid(uid);
-            if (!lightedStationService.updateLightedStation(lightedStation)) {
-                return ResultFactory.buildFailResult("修改点亮站点失败！");
-            }
-            return ResultFactory.buildSuccessResult("已成功修改点亮站点！");
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
-        }
 
-    }
     /*
      * 请求方式：post
      * 功能：用户获取指定点亮站点信息

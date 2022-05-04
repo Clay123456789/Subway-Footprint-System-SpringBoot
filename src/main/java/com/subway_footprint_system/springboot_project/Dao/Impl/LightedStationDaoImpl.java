@@ -57,23 +57,7 @@ public class LightedStationDaoImpl implements ILightedStationDao {
         }
         return false;
     }
-    /**
-     * 修改一行数据
-     */
-    @Override
-    public boolean updateLightedStation(LightedStation lightedStation) {
-       try {
-           //返回影响行数，为1表示修改成功
-           int result = jdbcTemplate.update("update lightedstation set credit=? where uid=? and pid = ?",lightedStation.getCredit(),lightedStation.getUid(),lightedStation.getPid());
-           if(1==result){
-                return true;
-           }
-        }catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
-        return false;
-    }
+
 
     /**
      * 获取一行数据
