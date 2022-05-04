@@ -15,9 +15,9 @@ public class Award {
     private int num;//该批次奖品剩余数量
     private String name;//奖品名称
     private String content;//奖品内容
-    private String credit;//兑换所需碳积分
+    private int credit;//兑换所需碳积分
     private String fromdate;//奖品上传时间
     private String todate;//奖品有效期
     private String mid;//(若为商户上传)商户id
-    private String status;//奖品当前状态（0正常/1下架/2售空等）
+    private int status;//奖品当前状态（0正常/1下架/2售空等）
 }

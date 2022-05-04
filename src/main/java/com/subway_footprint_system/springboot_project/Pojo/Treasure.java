@@ -13,7 +13,7 @@ public class Treasure {
     private String tid; //宝藏id
     private String variety; //宝藏种类
     private String content; //宝藏内容
-    private String credit; //打开所需碳积分
+    private int credit; //打开所需碳积分
     private String pid; //宝藏所藏的地铁站id
     private String fromdate; //藏宝时间
     private String todate; //有效期
