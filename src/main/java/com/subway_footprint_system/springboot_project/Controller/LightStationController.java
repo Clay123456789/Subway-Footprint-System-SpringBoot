@@ -50,7 +50,7 @@ public class LightStationController {
             }
             User user=  userService.getUserByUid(uid);
             int balance= user.getCredit()+lightedStation.getCredit();
-            CreditRecord creditRecord=new CreditRecord(uid+"-"+time,uid,"1","点亮站点获得",lightedStation.getCredit(),balance,time);
+            CreditRecord creditRecord=new CreditRecord(uid+"-"+time,uid,1,"点亮站点获得",lightedStation.getCredit(),balance,time);
             user.setCredit(creditRecord.getBalance());
             if (!creditRecordService.insertCreditRecord(creditRecord)||!userService.updateUser(new UserVo(user))) {
                 return ResultFactory.buildFailResult("新增点亮站点成功！增加碳积分失败！");

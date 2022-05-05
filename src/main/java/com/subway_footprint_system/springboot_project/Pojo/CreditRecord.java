@@ -13,7 +13,7 @@ public class CreditRecord {
 
     private String crid;//碳积分流水记录id
     private String uid;//用户id
-    private String operation;//操作类型（获得1/消耗0）
+    private int operation;//操作类型（获得1/消耗0）
     private String way;//获得/消耗途径
     private int num;//获得/消耗数量
     private int balance;//剩余碳积分数目
