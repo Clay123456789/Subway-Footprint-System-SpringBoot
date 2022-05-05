@@ -111,7 +111,11 @@ public class CreditController {
             creditRecord.setTime(JWTUtil.getNowTime());
             creditRecord.setCrid((creditRecord.getUid()+"-"+creditRecord.getTime()));
             User user=  userService.getUserByUid(uid);
-            creditRecord.setBalance(user.getCredit()+creditRecord.getNum());
+            if(creditRecord.getOperation()==1){
+                creditRecord.setBalance(user.getCredit()+creditRecord.getNum());
+            }else{
+                creditRecord.setBalance(user.getCredit()-creditRecord.getNum());
+            }
             user.setCredit(creditRecord.getBalance());
             if (!creditRecordService.insertCreditRecord(creditRecord)||!userService.updateUser(new UserVo(user))) {
                 return ResultFactory.buildFailResult("新增碳积分记录失败！");
