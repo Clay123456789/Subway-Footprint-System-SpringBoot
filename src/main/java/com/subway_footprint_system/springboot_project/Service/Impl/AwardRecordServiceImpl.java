@@ -17,7 +17,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
     private AwardDaoImpl awardDao;
     @Override
     public boolean addBuryAwardRecord(String aid,String uid,int num,int credit) {
-        AwardRecord awardRecord=new AwardRecord(uid+"-"+aid,0,uid,null,aid,num, JWTUtil.getNowTime(),credit);
+        AwardRecord awardRecord=new AwardRecord(uid+"-"+aid+"-"+JWTUtil.getNowTime(),0,uid,null,aid,num, JWTUtil.getNowTime(),credit);
         //award数量需相应减少
         Award award=awardDao.getAward(aid);
         award.setNum(Math.max(award.getNum() - num, 0));
