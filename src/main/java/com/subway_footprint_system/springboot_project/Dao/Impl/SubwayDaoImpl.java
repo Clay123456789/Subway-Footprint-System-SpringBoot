@@ -213,8 +213,9 @@ public class SubwayDaoImpl implements ISubwayDao {
             maplist.add(map1);
         }
         map.put("subways",maplist);
+        String toJson = JSON.toJSONString(map);
         // 加到缓存中
-        //operations.set(key, maplist.toString(), 10*60, TimeUnit.SECONDS);
+        operations.set(key, toJson, 10*60, TimeUnit.SECONDS);
         return map;
     }
 

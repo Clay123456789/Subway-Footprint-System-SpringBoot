@@ -24,7 +24,7 @@ public interface IUserService {
     //查
     User getUserByUid(String uid);
     User getUserByEmail(String email);
-    User getUserByUsername(String email);
+    User getUserByUsername(String username);
     List<User> getAllUsers();
     //根据Uid/Username/EMail及密码判断用户是否存在
     boolean judgeByUid(UserVo userVo);

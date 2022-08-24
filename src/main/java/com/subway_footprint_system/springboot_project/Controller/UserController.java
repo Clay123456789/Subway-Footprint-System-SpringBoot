@@ -29,7 +29,7 @@ public class UserController {
     private EMailServiceImpl eMailService;
     /*
      * 请求方式：post
-     * 功能：登陆
+     * 功能：登录
      * 路径 /user/login
      * 传参(json) username,password
      * 返回值(json--Result) code,message,data(str)
@@ -83,7 +83,7 @@ public class UserController {
         /*
          * 使用HttpSession在服务器与浏览器建立对话，以验证邮箱验证码
          * */
-        if (!eMailService.sendRegistEmail(userVo.getEmail(), httpSession)) {
+        if (!eMailService.sendRegistEmail_user(userVo.getEmail(), httpSession)) {
             return ResultFactory.buildFailResult("发送失败！邮箱已注册或不可用");
         }
         return ResultFactory.buildSuccessResult("已发送验证码至邮箱！");
@@ -101,7 +101,7 @@ public class UserController {
     @ResponseBody
     public Result regist(@Valid @RequestBody UserVo userVo) {
 
-        if (!eMailService.registered(userVo)) {
+        if (!eMailService.registered_user(userVo)) {
             return ResultFactory.buildFailResult("注册失败！验证码不一致");
         }
         return ResultFactory.buildSuccessResult("注册成功！");
@@ -120,7 +120,7 @@ public class UserController {
     @PostMapping(value = "/user/findPassword")
     @ResponseBody
     public Result findPassWord(@Valid @RequestBody UserVo userVo){
-        if(!eMailService.findPassword_sendEmail(userVo.getEmail())){
+        if(!eMailService.findPassword_sendEmail_user(userVo.getEmail())){
             return ResultFactory.buildFailResult("此邮箱非您注册时使用的邮箱,找回失败！");
         }
         return ResultFactory.buildSuccessResult("找回成功,密码已发送至您的邮箱！");
@@ -138,7 +138,7 @@ public class UserController {
     @PostMapping(value = "/user/changePassword")
     @ResponseBody
     public Result changePassword(@Valid @RequestBody UserVo userVo){
-        if(!eMailService.changePassword(userVo)){
+        if(!eMailService.changePassword_user(userVo)){
             return ResultFactory.buildFailResult("信息有误,修改失败！");
         }
         return ResultFactory.buildSuccessResult("修改密码成功！");

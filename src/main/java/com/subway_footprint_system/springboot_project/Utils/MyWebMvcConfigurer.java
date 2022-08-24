@@ -16,6 +16,10 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
                 .excludePathPatterns("/user/login")
                 .excludePathPatterns("/user/sendRegistEmail")
                 .excludePathPatterns("/user/findPassword")
+                .excludePathPatterns("/merchant/regist") // 商户登录注册相关接口不用于token验证
+                .excludePathPatterns("/merchant/login")
+                .excludePathPatterns("/merchant/sendRegistEmail")
+                .excludePathPatterns("/merchant/findPassword")
                 .excludePathPatterns("/encrypt")
                 .excludePathPatterns("/treasure/getTreasure")
                 .excludePathPatterns("/treasure/getPositionTreasure")
