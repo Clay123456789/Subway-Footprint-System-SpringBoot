@@ -95,17 +95,18 @@ public class AwardController {
             // 根据token解析出mid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String token_mid = decodedJWT.getClaim("mid").asString();
-            if(!token_mid.equals("")){
+            if(token_mid!=null){
                 List<Award> list=awardService.getMerchantAwards(token_mid);
                 if(null!=list) {
                     return ResultFactory.buildSuccessResult(list);
                 }
-            }else if(!decodedJWT.getClaim("managerID").asString().equals("")&&!mid.equals("")){
+            }else if(decodedJWT.getClaim("managerID").asString()!=null&&!mid.equals("")){
                 List<Award> list=awardService.getMerchantAwards(mid);
                 if(null!=list) {
                     return ResultFactory.buildSuccessResult(list);
                 }
             }
+            System.out.println(decodedJWT.getClaim("managerID").asString());
             return ResultFactory.buildFailResult("获取失败！");
         }catch (Exception e){
             e.printStackTrace();

@@ -46,8 +46,8 @@ public class ManagerController {
         if(null!=manager1&&manager1.getPassword().equals(manager.getPassword())){
             //已注册
             Map<String, String> map = new HashMap<>(); //用来存放payload信息
-            map.put("managerID",manager.getManagerID());
-            map.put("account",manager.getAccount());
+            map.put("managerID",manager1.getManagerID());
+            map.put("account",manager1.getAccount());
             // 生成token令牌
             String token = JWTUtil.generateToken(map);
             return ResultFactory.buildSuccessResult(token);
