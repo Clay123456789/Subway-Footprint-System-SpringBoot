@@ -62,11 +62,16 @@ public class TestController {
     @CrossOrigin
     @RequestMapping("/encrypt")
     public Result encrypt(String str){
-        String s=encryptor.encrypt(str);
-        log.info("密文：" +s );
-        //System.out.println("密文：" +s );
-        System.out.println("原文：" +encryptor.decrypt(s) );
-        return ResultFactory.buildSuccessResult(s);
+        return ResultFactory.buildSuccessResult(encryptor.encrypt(str));
     }
-
+    /**
+     * 解密
+     * @param str 密文
+     * @return Result data里为原文
+     */
+    @CrossOrigin
+    @RequestMapping("/decrypt")
+    public Result decrypt(String str){
+        return ResultFactory.buildSuccessResult(encryptor.decrypt(str));
+    }
 }

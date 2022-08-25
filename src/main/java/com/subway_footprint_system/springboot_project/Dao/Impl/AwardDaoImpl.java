@@ -138,4 +138,28 @@ public class AwardDaoImpl implements IAwardDao {
         return list2;
     }
 
+    public List<Award> getAllAwards() {
+        List<Award> list=null;
+        try{
+            RowMapper<Award> rowMapper = new BeanPropertyRowMapper<Award>(Award.class);
+            list= jdbcTemplate.query("select * from award ",rowMapper);
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return list;
+    }
+
+    public List<Award> getMerchantAwards(String mid) {
+        List<Award> list=null;
+        try{
+            RowMapper<Award> rowMapper = new BeanPropertyRowMapper<Award>(Award.class);
+            list= jdbcTemplate.query("select * from award where mid=?  ",rowMapper,mid);
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return list;
+
+    }
 }

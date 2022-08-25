@@ -12,6 +12,7 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(new JWTInterceptor())
                 //.excludePathPatterns("/**");
                 .excludePathPatterns("/Subway/**") // 地铁图相关接口不用于token验证
+                .excludePathPatterns("/award/**") // 奖品相关接口不用于token验证
                 .excludePathPatterns("/user/regist") // 用户登录注册相关接口不用于token验证
                 .excludePathPatterns("/user/login")
                 .excludePathPatterns("/user/sendRegistEmail")
@@ -20,10 +21,12 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
                 .excludePathPatterns("/merchant/login")
                 .excludePathPatterns("/merchant/sendRegistEmail")
                 .excludePathPatterns("/merchant/findPassword")
-                .excludePathPatterns("/encrypt")
+                .excludePathPatterns("/manager/login")
                 .excludePathPatterns("/treasure/getTreasure")
                 .excludePathPatterns("/treasure/getPositionTreasure")
                 .excludePathPatterns("/treasure/getAllTreasure")
-                .addPathPatterns("/**"); // 其他非登录接口都需要进行token验证
+                .excludePathPatterns("/encrypt")
+                .excludePathPatterns("/decrypt")
+              .addPathPatterns("/**"); // 其他非登录接口都需要进行token验证
     }
 }

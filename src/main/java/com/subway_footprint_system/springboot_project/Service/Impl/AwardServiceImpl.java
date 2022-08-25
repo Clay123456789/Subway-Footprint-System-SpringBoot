@@ -37,4 +37,14 @@ public class AwardServiceImpl implements IAwardService {
     public List<Award> getSomeAwards(Integer num) {
         return awardDao.getSomeAwards(num);
     }
+
+    @Override
+    public List<Award> getMerchantAwards(String mid) {
+        return awardDao.getMerchantAwards(mid);
+    }
+
+    @Override
+    public List<Award> getAllAwards() {
+        return awardDao.getAllAwards();
+    }
 }

@@ -14,5 +14,8 @@ public interface IAwardDao {
     Award getAward(String aid);
     //随机抽取若干奖品
     List<Award> getSomeAwards(Integer num);
+    //获取指定商户上传的所有奖品
+    List<Award> getMerchantAwards(String mid);
+    List<Award> getAllAwards();
 
 }
