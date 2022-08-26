@@ -8,6 +8,8 @@ import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Service
@@ -99,6 +101,23 @@ public class MerchantServiceImpl implements IMerchantService {
             merchant.setAuthenticated(0);
             merchant.setTime(JWTUtil.getNowTime());
             return merchantDao.updateAuthentication(merchant);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkAuthentication(String mid) throws ParseException {
+        Merchant merchant=merchantDao.getMerchantByMid(mid);
+        if(null!=merchant&&1==merchant.getAuthenticated()){
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
+            long time=formatter.parse(JWTUtil.getNowTime()).getTime() - formatter.parse(merchant.getTime()).getTime();
+            if(time / (24 * 60 * 60 * 1000)>365){//证书达到一年有效期
+                merchant.setAuthenticated(2);//2表示过期
+                merchantDao.updateAuthentication(merchant);
+                return false;
+            }else{
+                return true;
+            }
         }
         return false;
     }

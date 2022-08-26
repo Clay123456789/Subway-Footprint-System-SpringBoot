@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class MerchantController {
     @CrossOrigin
     @RequestMapping(value = "/merchant/login", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     @ResponseBody
-    public Result login(@Valid @RequestBody MerchantVo merchantVo, BindingResult bindingResult) {
+    public Result login(@Valid @RequestBody MerchantVo merchantVo, BindingResult bindingResult) throws ParseException {
         if (merchantVo.getAccount().equals("")||merchantVo.getPassword().equals("")) {
             String message = String.format("账号或密码不能为空！");
             return ResultFactory.buildFailResult(message);
@@ -48,7 +49,7 @@ public class MerchantController {
         }
         String mid=null;
         if (!merchantService.judgeByAccount(merchantVo)) {
-            //用户名不存在，判断是否为Emial登录用户
+            //账号不存在，判断是否为Emial登录用户
             merchantVo.setEmail(merchantVo.getAccount());
             if (!merchantService.judgeByEmail(merchantVo)) {
                 String message = String.format("登陆失败，账号/密码信息不正确。");
@@ -59,6 +60,7 @@ public class MerchantController {
         }else{
             mid=merchantService.getMerchantByAccount(merchantVo.getAccount()).getMid();
         }
+        merchantService.checkAuthentication(mid);
         //已注册
         Map<String, String> map = new HashMap<>(); //用来存放payload信息
         map.put("mid",mid);
