@@ -4,6 +4,7 @@ import com.subway_footprint_system.springboot_project.Dao.Impl.MerchantDaoImpl;
 import com.subway_footprint_system.springboot_project.Pojo.Merchant;
 import com.subway_footprint_system.springboot_project.Pojo.MerchantVo;
 import com.subway_footprint_system.springboot_project.Service.IMerchantService;
+import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -93,7 +94,12 @@ public class MerchantServiceImpl implements IMerchantService {
     }
 
     @Override
-    public List<Merchant> getAllMerchants() {
-        return merchantDao.getAllMerchants();
+    public boolean submitAuthentication(Merchant merchant) {
+        if(null!=merchant.getMid()){
+            merchant.setAuthenticated(0);
+            merchant.setTime(JWTUtil.getNowTime());
+            return merchantDao.updateAuthentication(merchant);
+        }
+        return false;
     }
 }

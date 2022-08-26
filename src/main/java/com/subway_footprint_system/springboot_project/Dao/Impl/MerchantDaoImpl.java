@@ -33,8 +33,8 @@ public class MerchantDaoImpl implements IMerchantDao {
     public boolean insertMerchant(Merchant merchant) {
         try {
             //返回影响行数，为1即增加成功
-            int result = jdbcTemplate.update("insert into merchant(mid,account,name,password,email,tel,info) values(?,?,?,?,?,?,?)",
-                    merchant.getMid(),merchant.getAccount(),merchant.getName(),encryptor.encrypt(merchant.getPassword()),merchant.getEmail(),merchant.getTel(),merchant.getInfo());
+            int result = jdbcTemplate.update("insert into merchant(mid,account,name,password,email,tel,location,certificate,authenticated,time,info) values(?,?,?,?,?,?,?,?,?,?,?)",
+                    merchant.getMid(),merchant.getAccount(),merchant.getName(),encryptor.encrypt(merchant.getPassword()),merchant.getEmail(),merchant.getTel(),merchant.getLocation(),null,-1,null,merchant.getInfo());
             return result > 0;
         }catch (Exception e){
             e.printStackTrace();
@@ -63,14 +63,14 @@ public class MerchantDaoImpl implements IMerchantDao {
         }
     }
     /**
-     * 修改一行数据：
+     * 修改商户基本信息：
      * 先修改mysql数据库，再将缓存的数据删除即可，不直接更新缓存，效率太低。
      */
     @Override
     public boolean updateMerchant(Merchant merchant) {
         //返回影响行数，为1表示修改成功
-        int result = jdbcTemplate.update("update merchant set account=?,name=?,tel=?,info=? where mid=?"
-                ,merchant.getAccount(),merchant.getName(),merchant.getTel(),merchant.getInfo(),merchant.getMid());
+        int result = jdbcTemplate.update("update merchant set account=?,name=?,tel=?,location=?,info=? where mid=?"
+                ,merchant.getAccount(),merchant.getName(),merchant.getTel(),merchant.getLocation(),merchant.getInfo(),merchant.getMid());
         if(result > 0){
             // 判断是否缓存存在
             String key1 = "merchant_" + merchant.getMid();
@@ -84,7 +84,27 @@ public class MerchantDaoImpl implements IMerchantDao {
         }
         return false;
     }
-
+    /**
+     * 修改商户认证信息：
+     *
+     */
+    @Override
+    public boolean updateAuthentication(Merchant merchant) {
+        //返回影响行数，为1表示修改成功
+        int result = jdbcTemplate.update("update merchant set authentication=?,authenticated=?,time=? where mid=?"
+                ,merchant.getAuthentication(),merchant.getAuthenticated(),merchant.getTime(),merchant.getMid());
+        if(result > 0){
+            // 判断是否缓存存在
+            String key1 = "merchant_" + merchant.getMid();
+            Boolean hasKey1 = redisTemplate.hasKey(key1);
+            // 缓存存在，进行删除
+            if (hasKey1) {
+                redisTemplate.delete(key1);
+            }
+            return true;
+        }
+        return false;
+    }
     @Override
     public boolean changePassword(String mid, String password) {
         //返回影响行数，为1表示修改成功
@@ -187,6 +207,21 @@ public class MerchantDaoImpl implements IMerchantDao {
         try{
             RowMapper<Merchant> rowMapper = new BeanPropertyRowMapper<Merchant>(Merchant.class);
             list= jdbcTemplate.query("select * from merchant order by mid ASC ",rowMapper);
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        for (Merchant merchant:list) {
+            merchant.setPassword(encryptor.decrypt(merchant.getPassword()));
+        }
+        return list;
+    }
+    @Override
+    public List<Merchant> getAllUnAuthenticatedMerchants() {
+        List<Merchant> list=null;
+        try{
+            RowMapper<Merchant> rowMapper = new BeanPropertyRowMapper<Merchant>(Merchant.class);
+            list= jdbcTemplate.query("select * from merchant where merchant.authenticated=0 order by time DESC",rowMapper);
         }catch(Exception e){
             e.printStackTrace();
             return null;

@@ -23,5 +23,7 @@ public interface IMerchantService {
     boolean judgeByMid(MerchantVo merchantVo);
     boolean judgeByAccount(MerchantVo merchantVo);
     boolean judgeByEmail(MerchantVo merchantVo);
-    List<Merchant> getAllMerchants();
+    //商户提交认证信息
+    boolean submitAuthentication(Merchant merchant);
+
 }

@@ -10,6 +10,7 @@ public interface IMerchantDao {
     boolean deleteMerchant(String mid);
     //更改商户信息（不含mid,password,email)
     boolean updateMerchant(Merchant merchant);
+    boolean updateAuthentication(Merchant merchant);
     //更改password
     boolean changePassword(String mid,String password);
 
@@ -18,4 +19,6 @@ public interface IMerchantDao {
     Merchant getMerchantByAccount(String account);
 
     List<Merchant> getAllMerchants();
+    List<Merchant> getAllUnAuthenticatedMerchants();
+
 }

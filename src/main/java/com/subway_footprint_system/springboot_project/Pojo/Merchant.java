@@ -13,5 +13,9 @@ public class Merchant {
     private String password;
     private String email;
     private String tel;
+    private String location;//商户位置（格式：经度，纬度）
+    private String authentication;//商户证书url
+    private int authenticated;//-1未认证/0认证中/1已认证/2认证过期
+    private String time;//认证时间（有效期一年）
     private String info;
 }

@@ -5,6 +5,7 @@ import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
 import com.subway_footprint_system.springboot_project.Pojo.*;
 import com.subway_footprint_system.springboot_project.Service.Impl.EMailServiceImpl;
 import com.subway_footprint_system.springboot_project.Service.Impl.MerchantServiceImpl;
+import com.subway_footprint_system.springboot_project.Utils.FtpUtil;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -24,6 +25,8 @@ public class MerchantController {
     private MerchantServiceImpl merchantService;
     @Autowired
     private EMailServiceImpl eMailService;
+    @Autowired
+    private FtpUtil ftpUtil;
     /*
      * 请求方式：post
      * 功能：登录
@@ -161,7 +164,7 @@ public class MerchantController {
     }
     /*
      * 请求方式：post
-     * 功能：修改商户信息（不包含修改商户mid、密码、和邮箱）
+     * 功能：修改商户信息（不包含修改商户mid、密码、和邮箱及认证信息）
      * 路径 /merchant/updateMerchant
      * 传参(json) （修改后的商户各属性）account,name,tel,info
      * 返回值 (json--Result) code,message,data(str)
@@ -181,6 +184,37 @@ public class MerchantController {
                 return ResultFactory.buildSuccessResult("已成功修改信息！");
             }
             return ResultFactory.buildFailResult("更改信息失败！");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultFactory.buildFailResult("登陆状态异常！");
+        }
+
+    }
+    /*
+     * 请求方式：post
+     * 功能：商户提交认证信息
+     * 路径 /merchant/submitAuthentication
+     * 传参(json) authentication
+     * 返回值 (json--Result) code,message,data(str)
+     * */
+    @CrossOrigin
+    @PostMapping(value ="/merchant/submitAuthentication")
+    @ResponseBody
+    public Result submitAuthentication(HttpServletRequest request,String authentication){
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出mid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String mid = decodedJWT.getClaim("mid").asString();
+            if(null!=mid&&ftpUtil.isImage(authentication)){
+                Merchant merchant=new Merchant();
+                merchant.setAuthentication(authentication);
+                if (merchantService.submitAuthentication(merchant)) {
+                    return ResultFactory.buildSuccessResult("已成功提交认证信息！");
+                }
+            }
+            return ResultFactory.buildFailResult("提交认证信息失败！");
         }catch (Exception e){
             e.printStackTrace();
             return ResultFactory.buildFailResult("登陆状态异常！");
