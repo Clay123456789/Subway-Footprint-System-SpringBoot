@@ -74,8 +74,8 @@ public class AwardDaoImpl implements IAwardDao {
     @Override
     public boolean updateAward(Award award) {
         //返回影响行数，为1表示修改成功
-        int result = jdbcTemplate.update("update award set variety=?, num=?, name=?, content=?, credit=?,todate=? where aid=? ",
-                award.getVariety(),award.getNum(),award.getName(),award.getContent(),award.getCredit(),award.getTodate(),award.getAid());
+        int result = jdbcTemplate.update("update award set variety=?, num=?, name=?, content=?, credit=?,todate=?,status=? where aid=? ",
+                award.getVariety(),award.getNum(),award.getName(),award.getContent(),award.getCredit(),award.getTodate(),award.getStatus(),award.getAid());
         if(result!=0){
             // 判断是否缓存存在
             String key = "award_" + award.getAid();

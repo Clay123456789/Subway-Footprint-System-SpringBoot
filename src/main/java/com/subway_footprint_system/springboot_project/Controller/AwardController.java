@@ -168,7 +168,7 @@ public class AwardController {
      * 请求方式：post
      * 功能：修改指定奖品(商户端和管理员端共用,商户只能修改其上传的奖品)
      * 路径 /award/updateAward
-     * 传参(json)aid, variety, num, name, content, credit,todate
+     * 传参(json)aid, variety, num, name, content, credit,todate,status
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
