@@ -207,8 +207,9 @@ public class MerchantController {
             // 根据token解析出mid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String mid = decodedJWT.getClaim("mid").asString();
-            if(null!=mid&&ftpUtil.isImage(authentication)){
+            if(null!=mid&&ftpUtil.isImage(ftpUtil.getFileExtention(authentication))){
                 Merchant merchant=new Merchant();
+                merchant.setMid(mid);
                 merchant.setAuthentication(authentication);
                 if (merchantService.submitAuthentication(merchant)) {
                     return ResultFactory.buildSuccessResult("已成功提交认证信息！");
