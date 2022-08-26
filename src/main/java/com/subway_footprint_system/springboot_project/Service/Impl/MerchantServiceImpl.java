@@ -27,7 +27,9 @@ public class MerchantServiceImpl implements IMerchantService {
 
     @Override
     public boolean updateMerchant(MerchantVo merchantVo) {
-        return merchantDao.updateMerchant(merchantVo);
+        if(null!=merchantVo.getMid())
+            return merchantDao.updateMerchant(merchantVo);
+        return false;
     }
 
     @Override

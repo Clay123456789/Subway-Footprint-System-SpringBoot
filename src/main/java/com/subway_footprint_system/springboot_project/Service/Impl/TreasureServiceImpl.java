@@ -25,7 +25,9 @@ public class TreasureServiceImpl implements ITreasureService {
 
     @Override
     public boolean updateTreasure(Treasure treasure) {
-        return treasureDao.updateTreasure(treasure);
+        if(null!=treasure.getTid())
+            return treasureDao.updateTreasure(treasure);
+        return false;
     }
 
     @Override

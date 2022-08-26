@@ -39,7 +39,9 @@ public class SubwayServiceImpl implements ISubwayService {
 
     @Override
     public boolean updateSubway(Subway subway) {
-        return subwayDao.updateSubway(subway);
+        if(null!=subway.getSid())
+            return subwayDao.updateSubway(subway);
+        return false;
     }
 
     @Override

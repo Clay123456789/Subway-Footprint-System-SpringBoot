@@ -53,7 +53,9 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public boolean updateUser(UserVo userVo) {
-        return  userDao.updateUser(userVo);
+        if(null!=getUserByUid(userVo.getUid()))
+            return userDao.updateUser(userVo);
+        return false;
     }
 
     @Override

@@ -28,9 +28,6 @@ public class TreasureController {
     private UserServiceImpl userService;
     @Autowired
     private CreditRecordServiceImpl creditRecordService;
-    public void f(){
-      //  log.info();
-    }
     /*
      * 请求方式：post
      * 功能：用户藏宝

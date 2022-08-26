@@ -20,12 +20,16 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
         AwardRecord awardRecord=new AwardRecord(uid+"-"+aid+"-"+JWTUtil.getNowTime(),0,uid,null,aid,num, JWTUtil.getNowTime(),credit);
         //award数量需相应减少
         Award award=awardDao.getAward(aid);
-        award.setNum(Math.max(award.getNum() - num, 0));
-        //若award剩余数量为0，状态改为已售空（2）
-        if(award.getNum()==0){
-            award.setStatus(2);
+        if(0==award.getStatus()){
+            award.setNum(Math.max(award.getNum() - num, 0));
+            //若award剩余数量为0，状态改为已售空（2）
+            if(0==award.getNum()){
+                award.setStatus(2);
+            }
+            awardDao.updateAward(award);
+            return awardRecordDao.insertAwardRecord(awardRecord);
         }
-        awardDao.updateAward(award);
-        return awardRecordDao.insertAwardRecord(awardRecord);
+        return false;
+
     }
 }
