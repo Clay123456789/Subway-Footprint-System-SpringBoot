@@ -48,7 +48,7 @@ public class WebControllerAop {
         HttpServletRequest req = attributes.getRequest();
         // 记录下请求内容
         log.info("请求URL : " + req.getRequestURL().toString());
-        log.info("HTTP_METHOD : " + req.getMethod());
+        log.info("HTTPS_METHOD : " + req.getMethod());
         log.info("IP : " + req.getRemoteAddr());
         log.info("接口具体信息:"+signature.toString());
         //AOP代理类的类（class）信息

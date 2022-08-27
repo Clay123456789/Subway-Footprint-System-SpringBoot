@@ -3,21 +3,16 @@ package com.subway_footprint_system.springboot_project.Controller;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
 import com.subway_footprint_system.springboot_project.Pojo.*;
-import com.subway_footprint_system.springboot_project.Service.Impl.TreasureServiceImpl;
-import com.subway_footprint_system.springboot_project.Utils.FtpUtil;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
+import com.subway_footprint_system.springboot_project.Utils.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -32,6 +27,10 @@ public class TestController {
 
     @Autowired
     private StringEncryptor encryptor;
+    @Resource
+    private WebSocketServer webSocketServer;
+
+
     @CrossOrigin
     @RequestMapping("/hello")
     public String hello(String username){
@@ -74,4 +73,13 @@ public class TestController {
     public Result decrypt(String str){
         return ResultFactory.buildSuccessResult(encryptor.decrypt(str));
     }
+
+    @GetMapping("/scanSuccess/{deliveryCode}")
+    public String scanSuccess(@PathVariable("deliveryCode") String deliveryCode){
+        //
+        webSocketServer.sendOneMessage(deliveryCode, "成功");
+        return "success";
+    }
+
+
 }

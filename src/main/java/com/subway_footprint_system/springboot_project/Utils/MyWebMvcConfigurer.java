@@ -27,6 +27,9 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
                 .excludePathPatterns("/treasure/getAllTreasure")
                 .excludePathPatterns("/encrypt")
                 .excludePathPatterns("/decrypt")
+                .excludePathPatterns("/websocket/**")
+                .excludePathPatterns("/scanSuccess/**")
+
               .addPathPatterns("/**"); // 其他非登录接口都需要进行token验证
     }
 }
