@@ -151,7 +151,7 @@ public class MerchantController {
     @CrossOrigin
     @PostMapping(value ="/merchant/getMerchant")
     @ResponseBody
-    public Result getUser(HttpServletRequest request) {
+    public Result getMerchant(HttpServletRequest request) {
         try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");

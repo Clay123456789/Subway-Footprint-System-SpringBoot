@@ -33,7 +33,7 @@ public class MerchantDaoImpl implements IMerchantDao {
     public boolean insertMerchant(Merchant merchant) {
         try {
             //返回影响行数，为1即增加成功
-            int result = jdbcTemplate.update("insert into merchant(mid,account,name,password,email,tel,location,certificate,authenticated,time,info) values(?,?,?,?,?,?,?,?,?,?,?)",
+            int result = jdbcTemplate.update("insert into merchant(mid,account,name,password,email,tel,location,authentication,authenticated,time,info) values(?,?,?,?,?,?,?,?,?,?,?)",
                     merchant.getMid(),merchant.getAccount(),merchant.getName(),encryptor.encrypt(merchant.getPassword()),merchant.getEmail(),merchant.getTel(),merchant.getLocation(),null,-1,null,merchant.getInfo());
             return result > 0;
         }catch (Exception e){
