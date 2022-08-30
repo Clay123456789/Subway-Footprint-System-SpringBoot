@@ -59,7 +59,7 @@ public class TreasureController {
                     .uid(uid)
                     .message(message)
                     .build();
-            if(!treasureService.insertTreasure(treasure)||!awardRecordService.addBuryAwardRecord(aid,uid,num,credit)){
+            if(!treasureService.insertTreasure(treasure)||!awardRecordService.addUserBuryAwardRecord(aid,uid,num,credit)){
                 return ResultFactory.buildFailResult("藏宝失败！");
             }
             return ResultFactory.buildSuccessResult("藏宝成功！");
@@ -100,7 +100,7 @@ public class TreasureController {
 
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
 
     }
@@ -123,31 +123,19 @@ public class TreasureController {
             // 根据token解析出uid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String uid = decodedJWT.getClaim("uid").asString();
-            String time=JWTUtil.getNowTime();
             Treasure treasure1=treasureService.getTreasure(treasure.getTid());
             treasure1.setStatus(2);
-            User user=  userService.getUserByUid(uid);
             if(!treasureService.updateTreasure(treasure1)){
                 return ResultFactory.buildFailResult("打开宝箱失败");
             }
-            CreditRecord creditRecord=CreditRecord.builder()
-                    .uid(uid)
-                    .num(treasure1.getCredit())
-                    .time(time)
-                    .way("打开宝箱")
-                    .operation(0)
-                    .crid(uid+"-"+time)
-                    .balance(user.getCredit()-treasure1.getCredit())
-                    .build();
-            user.setCredit(creditRecord.getBalance());
-            if (!creditRecordService.insertCreditRecord(creditRecord)||!userService.updateUser(new UserVo(user))) {
+            if (!creditRecordService.insertCreditRecord(0,uid,"打开宝箱",treasure1.getCredit())) {
                 return ResultFactory.buildFailResult("信息同步失败！");
             }
             return ResultFactory.buildSuccessResult("打开宝箱成功！");
 
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
 
     }
@@ -170,7 +158,7 @@ public class TreasureController {
             return ResultFactory.buildSuccessResult(treasure1);
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
 
@@ -190,7 +178,7 @@ public class TreasureController {
             return ResultFactory.buildSuccessResult(list);
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
 
@@ -211,7 +199,7 @@ public class TreasureController {
             return ResultFactory.buildSuccessResult(list);
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
 
@@ -237,7 +225,7 @@ public class TreasureController {
             return ResultFactory.buildSuccessResult(list);
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
 

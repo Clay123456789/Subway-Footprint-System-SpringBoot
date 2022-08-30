@@ -52,7 +52,7 @@ public class AwardController {
             if(token_mid!=null){
                 award.setMid(token_mid);
             }else if(null==decodedJWT.getClaim("managerID").asString()){
-                return ResultFactory.buildFailResult("登陆状态异常！");
+                return ResultFactory.buildFailResult("出现异常！");
             }
             if(awardService.insertAward(award)){
                 return ResultFactory.buildSuccessResult("已成功添加奖品");
@@ -60,7 +60,7 @@ public class AwardController {
             return ResultFactory.buildFailResult("添加失败！");
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
 
     }
@@ -139,7 +139,7 @@ public class AwardController {
             return ResultFactory.buildFailResult("获取失败！");
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
 
     }
@@ -175,7 +175,7 @@ public class AwardController {
     @PostMapping(value = "/award/updateAward")
     @ResponseBody
     public Result updateAward(@Valid @RequestBody Award award,HttpServletRequest request) {
-       try {
+        try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");
             // 根据token解析出mid;
@@ -184,14 +184,14 @@ public class AwardController {
 
             if(token_mid!=null&&token_mid.equals(awardService.getAward(award.getAid()).getMid())){
                 award.setMid(token_mid);
-               if(awardService.updateAward(award)){
-                   return ResultFactory.buildSuccessResult("已成功修改奖品");
-               }
+                if(awardService.updateAward(award)){
+                    return ResultFactory.buildSuccessResult("已成功修改奖品");
+                }
             }else if(null!=decodedJWT.getClaim("managerID").asString()){
                 award.setMid(null);
-               if(awardService.updateAward(award)){
-                   return ResultFactory.buildSuccessResult("已成功修改奖品");
-               }
+                if(awardService.updateAward(award)){
+                    return ResultFactory.buildSuccessResult("已成功修改奖品");
+                }
             }
             return ResultFactory.buildFailResult("修改失败！");
         }catch (Exception e){

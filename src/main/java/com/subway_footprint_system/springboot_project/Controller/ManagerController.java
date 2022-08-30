@@ -89,7 +89,7 @@ public class ManagerController {
             return ResultFactory.buildFailResult("提交审核信息失败！");
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
 
     }
@@ -111,12 +111,12 @@ public class ManagerController {
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String managerID = decodedJWT.getClaim("managerID").asString();
             if(null!=managerID){
-                    return ResultFactory.buildSuccessResult(managerService.getAllMerchants());
+                return ResultFactory.buildSuccessResult(managerService.getAllMerchants());
             }
             return ResultFactory.buildFailResult("获取商户信息失败！");
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
     /*
@@ -142,7 +142,7 @@ public class ManagerController {
             return ResultFactory.buildFailResult("获取商户信息失败！");
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
 }

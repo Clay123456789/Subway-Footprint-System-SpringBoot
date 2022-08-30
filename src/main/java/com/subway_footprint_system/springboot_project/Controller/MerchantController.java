@@ -161,7 +161,7 @@ public class MerchantController {
             return ResultFactory.buildSuccessResult(merchantService.getMerchantByMid(mid));
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
     /*
@@ -188,7 +188,7 @@ public class MerchantController {
             return ResultFactory.buildFailResult("更改信息失败！");
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
 
     }
@@ -220,7 +220,7 @@ public class MerchantController {
             return ResultFactory.buildFailResult("提交认证信息失败！");
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
 
     }

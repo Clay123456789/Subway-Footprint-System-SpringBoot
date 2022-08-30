@@ -107,17 +107,7 @@ public class CreditController {
             // 根据token解析出uid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String uid = decodedJWT.getClaim("uid").asString();
-            creditRecord.setUid(uid);
-            creditRecord.setTime(JWTUtil.getNowTime());
-            creditRecord.setCrid((creditRecord.getUid()+"-"+creditRecord.getTime()));
-            User user=  userService.getUserByUid(uid);
-            if(creditRecord.getOperation()==1){
-                creditRecord.setBalance(user.getCredit()+creditRecord.getNum());
-            }else{
-                creditRecord.setBalance(user.getCredit()-creditRecord.getNum());
-            }
-            user.setCredit(creditRecord.getBalance());
-            if (!creditRecordService.insertCreditRecord(creditRecord)||!userService.updateUser(new UserVo(user))) {
+            if (creditRecordService.insertCreditRecord(creditRecord.getOperation(),uid,creditRecord.getWay(),creditRecord.getNum())) {
                 return ResultFactory.buildFailResult("新增碳积分记录失败！");
             }
             return ResultFactory.buildSuccessResult("新增碳积分记录成功！");

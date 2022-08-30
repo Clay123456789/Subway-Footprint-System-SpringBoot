@@ -48,18 +48,14 @@ public class LightStationController {
             if (!lightedStationService.insertLightedStation(lightedStation)) {
                 return ResultFactory.buildFailResult("新增点亮站点失败！");
             }
-            User user=  userService.getUserByUid(uid);
-            int balance= user.getCredit()+lightedStation.getCredit();
-            CreditRecord creditRecord=new CreditRecord(uid+"-"+time,uid,1,"点亮站点获得",lightedStation.getCredit(),balance,time);
-            user.setCredit(creditRecord.getBalance());
-            if (!creditRecordService.insertCreditRecord(creditRecord)||!userService.updateUser(new UserVo(user))) {
+            if (!creditRecordService.insertCreditRecord(1,uid,"点亮站点获得",lightedStation.getCredit())) {
                 return ResultFactory.buildFailResult("新增点亮站点成功！增加碳积分失败！");
             }
 
             return ResultFactory.buildSuccessResult("已成功新增点亮站点并增加相应碳积分！");
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
 
     }
@@ -87,7 +83,7 @@ public class LightStationController {
             return ResultFactory.buildSuccessResult("已成功删除点亮站点！");
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
 
@@ -113,7 +109,7 @@ public class LightStationController {
             return ResultFactory.buildSuccessResult(lightedStation1);
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
     /*
@@ -139,7 +135,7 @@ public class LightStationController {
             return ResultFactory.buildSuccessResult(list);
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
 }

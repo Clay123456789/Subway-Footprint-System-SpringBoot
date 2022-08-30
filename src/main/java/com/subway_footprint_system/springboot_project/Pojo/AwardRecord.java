@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 public class AwardRecord {
 
     private String arid;//奖品流水记录id
-    private int operation;//操作类型(兑换1/藏宝0）
+    private int operation;//操作类型(购物车中-1/已兑换1/藏宝0）
     private String uid;//(若为兑换/藏宝为普通用户）用户id
-    private String mid;//(若为商户藏宝）商户id
+    private String mid;//(用户兑换/商户藏宝）商户id
     private String aid;//兑换/藏宝商品所属批次id
     private int num;//兑换/藏宝数目
     private String time;//兑换/藏宝时间

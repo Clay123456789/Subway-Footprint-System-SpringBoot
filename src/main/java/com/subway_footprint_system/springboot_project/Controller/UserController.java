@@ -164,7 +164,7 @@ public class UserController {
             return ResultFactory.buildSuccessResult(userService.getUserByUid(uid));
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
     }
 
@@ -193,7 +193,7 @@ public class UserController {
             return ResultFactory.buildFailResult("更改个人信息失败！");
         }catch (Exception e){
             e.printStackTrace();
-            return ResultFactory.buildFailResult("登陆状态异常！");
+            return ResultFactory.buildFailResult("出现异常！");
         }
 
     }
