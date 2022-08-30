@@ -7,14 +7,15 @@ import java.util.List;
 
 public interface IManagerService {
 
-    Manager getManagerByManagerId(String managerID);
-    Manager getManagerByAccount(String account);
+  Manager getManagerByManagerId(String managerID);
 
-    //获取所有注册的商户
-    List<Merchant> getAllMerchants();
-    //获取认证中的商户
-    List<Merchant> getAllUnAuthenticatedMerchants();
+  Manager getManagerByAccount(String account);
 
-    //对商户认证
-    boolean checkAuthentication(String mid, boolean isApproved);
+  // 获取所有注册的商户
+  List<Merchant> getAllMerchants();
+  // 获取认证中的商户
+  List<Merchant> getAllUnAuthenticatedMerchants();
+
+  // 对商户认证
+  boolean checkAuthentication(String mid, boolean isApproved);
 }

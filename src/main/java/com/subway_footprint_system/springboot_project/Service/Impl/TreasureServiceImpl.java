@@ -10,43 +10,41 @@ import java.util.List;
 
 @Service
 public class TreasureServiceImpl implements ITreasureService {
-    @Autowired
-    private TreasureDaoImpl treasureDao;
+  @Autowired private TreasureDaoImpl treasureDao;
 
-    @Override
-    public boolean insertTreasure(Treasure treasure) {
-        return treasureDao.insertTreasure(treasure);
-    }
+  @Override
+  public boolean insertTreasure(Treasure treasure) {
+    return treasureDao.insertTreasure(treasure);
+  }
 
-    @Override
-    public boolean deleteTreasure(String tid) {
-        return treasureDao.deleteTreasure(tid);
-    }
+  @Override
+  public boolean deleteTreasure(String tid) {
+    return treasureDao.deleteTreasure(tid);
+  }
 
-    @Override
-    public boolean updateTreasure(Treasure treasure) {
-        if(null!=treasure.getTid())
-            return treasureDao.updateTreasure(treasure);
-        return false;
-    }
+  @Override
+  public boolean updateTreasure(Treasure treasure) {
+    if (null != treasure.getTid()) return treasureDao.updateTreasure(treasure);
+    return false;
+  }
 
-    @Override
-    public Treasure getTreasure(String tid) {
-        return treasureDao.getTreasure(tid);
-    }
+  @Override
+  public Treasure getTreasure(String tid) {
+    return treasureDao.getTreasure(tid);
+  }
 
-    @Override
-    public List<Treasure> getPositionTreasure(String pid) {
-        return treasureDao.getPositionTreasure(pid);
-    }
+  @Override
+  public List<Treasure> getPositionTreasure(String pid) {
+    return treasureDao.getPositionTreasure(pid);
+  }
 
-    @Override
-    public List<Treasure> getAllTreasure() {
-        return treasureDao.getAllTreasure();
-    }
+  @Override
+  public List<Treasure> getAllTreasure() {
+    return treasureDao.getAllTreasure();
+  }
 
-    @Override
-    public List<Treasure> getUserTreasure(String uid2) {
-        return treasureDao.getUserTreasure(uid2);
-    }
+  @Override
+  public List<Treasure> getUserTreasure(String uid2) {
+    return treasureDao.getUserTreasure(uid2);
+  }
 }

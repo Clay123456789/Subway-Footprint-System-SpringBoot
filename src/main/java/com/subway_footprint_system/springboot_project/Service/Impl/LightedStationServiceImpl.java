@@ -10,26 +10,25 @@ import java.util.List;
 
 @Service
 public class LightedStationServiceImpl implements ILightedStationService {
-    @Autowired
-    private LightedStationDaoImpl lightedStationDao;
+  @Autowired private LightedStationDaoImpl lightedStationDao;
 
-    @Override
-    public boolean insertLightedStation(LightedStation lightedStation) {
-        return lightedStationDao.insertLightedStation(lightedStation);
-    }
+  @Override
+  public boolean insertLightedStation(LightedStation lightedStation) {
+    return lightedStationDao.insertLightedStation(lightedStation);
+  }
 
-    @Override
-    public boolean deleteLightedStation(String uid, String pid) {
-        return lightedStationDao.deleteLightedStation(uid,pid);
-    }
+  @Override
+  public boolean deleteLightedStation(String uid, String pid) {
+    return lightedStationDao.deleteLightedStation(uid, pid);
+  }
 
-    @Override
-    public LightedStation getLightedStation(String uid, String pid) {
-        return lightedStationDao.getLightedStation(uid,pid);
-    }
+  @Override
+  public LightedStation getLightedStation(String uid, String pid) {
+    return lightedStationDao.getLightedStation(uid, pid);
+  }
 
-    @Override
-    public List<LightedStation> getUserLightedStations(String uid) {
-        return lightedStationDao.getUserLightedStations(uid);
-    }
+  @Override
+  public List<LightedStation> getUserLightedStations(String uid) {
+    return lightedStationDao.getUserLightedStations(uid);
+  }
 }
