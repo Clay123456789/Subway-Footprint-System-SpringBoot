@@ -2,6 +2,7 @@ package com.subway_footprint_system.springboot_project.Service.Impl;
 
 import com.subway_footprint_system.springboot_project.Dao.Impl.AwardDaoImpl;
 import com.subway_footprint_system.springboot_project.Dao.Impl.AwardRecordDaoImpl;
+import com.subway_footprint_system.springboot_project.Dao.Impl.MerchantDaoImpl;
 import com.subway_footprint_system.springboot_project.Dao.Impl.UserDaoImpl;
 import com.subway_footprint_system.springboot_project.Pojo.Award;
 import com.subway_footprint_system.springboot_project.Pojo.AwardRecord;
@@ -22,6 +23,8 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
     private UserDaoImpl userDao;
     @Autowired
     private AwardDaoImpl awardDao;
+    @Autowired
+    private MerchantDaoImpl merchantDao;
 
     @Override
     public boolean addUserBuryAwardRecord(String aid, String uid, int num, int credit) {
@@ -44,6 +47,27 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
         }
         return false;
 
+    }
+
+    @Override
+    public boolean addMerchantBuryAwardRecord(String aid, String mid, int num, int credit) {
+        Award award = awardDao.getAward(aid);
+        if (null == award || null == (merchantDao.getMerchantByMid(mid)) || !mid.equals(award.getMid())) {
+            return false;
+        }
+        String time = JWTUtil.getNowTime();
+        AwardRecord awardRecord = new AwardRecord(mid + "-" + aid + "-" + time, 0, null, mid, aid, num, time, credit);
+        //award数量需相应减少
+        if (0 == award.getStatus() && award.getNum() >= num) {
+            award.setNum(Math.max(award.getNum() - num, 0));
+            //若award剩余数量为0，状态改为已售空（2）
+            if (0 == award.getNum()) {
+                award.setStatus(2);
+            }
+            awardDao.updateAward(award);
+            return awardRecordDao.insertMysqlAwardRecord(awardRecord);
+        }
+        return false;
     }
 
     @Override

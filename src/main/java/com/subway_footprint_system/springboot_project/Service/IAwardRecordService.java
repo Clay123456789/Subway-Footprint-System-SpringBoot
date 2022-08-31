@@ -8,6 +8,9 @@ public interface IAwardRecordService {
     //增加用户藏宝记录
     boolean addUserBuryAwardRecord(String aid, String uid, int num, int credit);
 
+    //增加商户藏宝记录
+    boolean addMerchantBuryAwardRecord(String aid, String mid, int num, int credit);
+
     //增加奖品进购物车
     boolean insertShoppingAwardRecord(String aid, String uid, int num);
 

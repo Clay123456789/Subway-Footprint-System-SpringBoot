@@ -14,9 +14,11 @@ public interface ITreasureService {
 
     Treasure getTreasure(String tid);
 
-    List<Treasure> getPositionTreasure(String pid);
+    List<Treasure> getPositionTreasures(String pid);
 
-    List<Treasure> getAllTreasure();
+    List<Treasure> getAllTreasures();
 
-    List<Treasure> getUserTreasure(String uid2);
+    List<Treasure> getUserTreasures(String uid);
+
+    List<Treasure> getMerchantTreasures(String mid);
 }

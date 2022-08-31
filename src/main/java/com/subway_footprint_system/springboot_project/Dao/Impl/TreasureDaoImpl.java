@@ -95,7 +95,7 @@ public class TreasureDaoImpl implements ITreasureDao {
      * 查询的是未被挖走的宝箱
      */
     @Override
-    public List<Treasure> getPositionTreasure(String pid) {
+    public List<Treasure> getPositionTreasures(String pid) {
         List<Treasure> list = null;
         try {
             RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
@@ -112,7 +112,7 @@ public class TreasureDaoImpl implements ITreasureDao {
      * 查询的是未被挖走的宝箱
      */
     @Override
-    public List<Treasure> getAllTreasure() {
+    public List<Treasure> getAllTreasures() {
         List<Treasure> list = null;
         try {
             RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
@@ -125,11 +125,24 @@ public class TreasureDaoImpl implements ITreasureDao {
     }
 
     @Override
-    public List<Treasure> getUserTreasure(String uid2) {
+    public List<Treasure> getUserTreasures(String uid2) {
         List<Treasure> list = null;
         try {
             RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
             list = jdbcTemplate.query("select * from treasure where uid2=? order by status ASC,getdate ASC", rowMapper, uid2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return list;
+    }
+
+    @Override
+    public List<Treasure> getMerchantTreasures(String mid) {
+        List<Treasure> list = null;
+        try {
+            RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
+            list = jdbcTemplate.query("select * from treasure where mid=? order by status ASC,getdate ASC", rowMapper, mid);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

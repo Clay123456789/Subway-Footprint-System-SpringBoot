@@ -2,11 +2,8 @@ package com.subway_footprint_system.springboot_project.Controller;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
-import com.subway_footprint_system.springboot_project.Pojo.Merchant;
-import com.subway_footprint_system.springboot_project.Pojo.MerchantVo;
-import com.subway_footprint_system.springboot_project.Pojo.Result;
-import com.subway_footprint_system.springboot_project.Service.Impl.EMailServiceImpl;
-import com.subway_footprint_system.springboot_project.Service.Impl.MerchantServiceImpl;
+import com.subway_footprint_system.springboot_project.Pojo.*;
+import com.subway_footprint_system.springboot_project.Service.Impl.*;
 import com.subway_footprint_system.springboot_project.Utils.FtpUtil;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @EnableAutoConfiguration
@@ -30,6 +28,12 @@ public class MerchantController {
     private EMailServiceImpl eMailService;
     @Autowired
     private FtpUtil ftpUtil;
+    @Autowired
+    private TreasureServiceImpl treasureService;
+    @Autowired
+    private AwardServiceImpl awardService;
+    @Autowired
+    private AwardRecordServiceImpl awardRecordService;
 
     /*
      * 请求方式：post
@@ -229,5 +233,72 @@ public class MerchantController {
             return ResultFactory.buildFailResult("出现异常！");
         }
 
+    }
+
+    /*
+     * 请求方式：post
+     * 功能：商户藏宝
+     * 路径 /merchant/buryTreasure
+     * 传参(json) <String>aid（选择的奖品id） <int>num(藏宝的奖品个数) <int>credit(打开所需碳积分) <String>pid(站点id) <String>message(留言)
+     * 返回值 (json--Result) code,message,data(str)
+     * */
+    @CrossOrigin
+    @PostMapping(value = "/merchant/buryTreasure")
+    @ResponseBody
+    public Result buryTreasure(HttpServletRequest request, String aid, int num, int credit, String pid, String message) {
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String mid = decodedJWT.getClaim("mid").asString();
+            String time = JWTUtil.getNowTime();
+            Award award = awardService.getAward(aid);
+            Treasure treasure = Treasure.builder()
+                    .tid(mid + '-' + time)
+                    .variety(award.getVariety())
+                    .content(award.getContent())
+                    .credit(credit)
+                    .pid(pid)
+                    .fromdate(time)
+                    .todate(award.getTodate())
+                    .status(0)
+                    .mid(mid)
+                    .message(message)
+                    .build();
+            if (!treasureService.insertTreasure(treasure) || !awardRecordService.addMerchantBuryAwardRecord(aid, mid, num, credit)) {
+                return ResultFactory.buildFailResult("藏宝失败！");
+            }
+            return ResultFactory.buildSuccessResult("藏宝成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultFactory.buildFailResult("出现异常！");
+        }
+
+    }
+    /*
+     * 请求方式：post
+     * 功能：获取商户的所有藏宝记录
+     * 路径 /merchant/getMerchantTreasures
+     * 传参(json) null
+     * 返回值 (json--Result) code,message,data(str)
+     * */
+
+    @CrossOrigin
+    @PostMapping(value = "/merchant/getMerchantTreasures")
+    @ResponseBody
+    public Result getMerchantTreasures(HttpServletRequest request) {
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出uid;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String mid = decodedJWT.getClaim("mid").asString();
+            List<Treasure> list = treasureService.getMerchantTreasures(mid);
+            return ResultFactory.buildSuccessResult(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultFactory.buildFailResult("出现异常！");
+        }
     }
 }

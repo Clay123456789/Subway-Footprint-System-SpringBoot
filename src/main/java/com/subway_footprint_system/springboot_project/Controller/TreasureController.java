@@ -5,7 +5,10 @@ import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
 import com.subway_footprint_system.springboot_project.Pojo.Award;
 import com.subway_footprint_system.springboot_project.Pojo.Result;
 import com.subway_footprint_system.springboot_project.Pojo.Treasure;
-import com.subway_footprint_system.springboot_project.Service.Impl.*;
+import com.subway_footprint_system.springboot_project.Service.Impl.AwardRecordServiceImpl;
+import com.subway_footprint_system.springboot_project.Service.Impl.AwardServiceImpl;
+import com.subway_footprint_system.springboot_project.Service.Impl.CreditRecordServiceImpl;
+import com.subway_footprint_system.springboot_project.Service.Impl.TreasureServiceImpl;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +30,13 @@ public class TreasureController {
     @Autowired
     private AwardServiceImpl awardService;
     @Autowired
-    private UserServiceImpl userService;
-    @Autowired
     private CreditRecordServiceImpl creditRecordService;
 
     /*
      * 请求方式：post
      * 功能：用户藏宝
-     * 路径 /user/buryTreasure
-     * 传参(json) <String>aid（用户选择的奖品id） <int>num(藏宝的奖品个数) <int>credit(打开所需碳积分) <String>pid(站点id) <String>message(留言)
+     * 路径 /treasure/buryTreasure
+     * 传参(json) <String>aid（选择的奖品id） <int>num(藏宝的奖品个数) <int>credit(打开所需碳积分) <String>pid(站点id) <String>message(留言)
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
@@ -57,7 +58,7 @@ public class TreasureController {
                     .credit(credit)
                     .pid(pid)
                     .fromdate(time)
-                    .todate("2035年3月3日00:00:00")
+                    .todate(award.getTodate())
                     .status(0)
                     .uid(uid)
                     .message(message)
@@ -175,9 +176,9 @@ public class TreasureController {
     @CrossOrigin
     @PostMapping(value = "/treasure/getPositionTreasure")
     @ResponseBody
-    public Result getPositionTreasure(@Valid @RequestBody Treasure treasure) {
+    public Result getPositionTreasures(@Valid @RequestBody Treasure treasure) {
         try {
-            List<Treasure> list = treasureService.getPositionTreasure(treasure.getPid());
+            List<Treasure> list = treasureService.getPositionTreasures(treasure.getPid());
             return ResultFactory.buildSuccessResult(list);
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,9 +197,9 @@ public class TreasureController {
     @CrossOrigin
     @PostMapping(value = "/treasure/getAllTreasure")
     @ResponseBody
-    public Result getAllTreasure() {
+    public Result getAllTreasures() {
         try {
-            List<Treasure> list = treasureService.getAllTreasure();
+            List<Treasure> list = treasureService.getAllTreasures();
             return ResultFactory.buildSuccessResult(list);
         } catch (Exception e) {
             e.printStackTrace();
@@ -217,14 +218,14 @@ public class TreasureController {
     @CrossOrigin
     @PostMapping(value = "/treasure/getUserTreasure")
     @ResponseBody
-    public Result getUserTreasure(HttpServletRequest request) {
+    public Result getUserTreasures(HttpServletRequest request) {
         try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");
             // 根据token解析出uid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String uid2 = decodedJWT.getClaim("uid").asString();
-            List<Treasure> list = treasureService.getUserTreasure(uid2);
+            List<Treasure> list = treasureService.getUserTreasures(uid2);
             return ResultFactory.buildSuccessResult(list);
         } catch (Exception e) {
             e.printStackTrace();
