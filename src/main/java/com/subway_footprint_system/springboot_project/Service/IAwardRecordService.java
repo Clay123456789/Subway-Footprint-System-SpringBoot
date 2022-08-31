@@ -47,6 +47,10 @@ public interface IAwardRecordService {
     //订单过期
     boolean expireOrder(String arid);
 
+    //使用奖品
+    boolean useAwardRecord(String arid);
+
+
     //获取用户所有奖品兑换记录
     List<AwardRecord> getExchangeAwardRecords(String uid, int group);
 

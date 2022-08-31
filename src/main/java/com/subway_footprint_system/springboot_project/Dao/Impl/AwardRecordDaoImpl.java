@@ -27,8 +27,8 @@ public class AwardRecordDaoImpl implements IAwardRecordDao {
     public boolean insertMysqlAwardRecord(AwardRecord awardRecord) {
         try {
             //返回影响行数，为1即增加成功
-            int result = jdbcTemplate.update("insert into award_record (arid, operation, uid, mid, aid, num, time, credit) values(?,?,?,?,?,?,?,?)",
-                    awardRecord.getArid(), awardRecord.getOperation(), awardRecord.getUid(), awardRecord.getMid(), awardRecord.getAid(), awardRecord.getNum(), awardRecord.getTime(), awardRecord.getCredit());
+            int result = jdbcTemplate.update("insert into award_record (arid, operation, uid, mid, aid, num, time, credit,remaining_count) values(?,?,?,?,?,?,?,?,?)",
+                    awardRecord.getArid(), awardRecord.getOperation(), awardRecord.getUid(), awardRecord.getMid(), awardRecord.getAid(), awardRecord.getNum(), awardRecord.getTime(), awardRecord.getCredit(), awardRecord.getRemaining_count());
             if (1 == result) {
                 return true;
             }
@@ -119,8 +119,7 @@ public class AwardRecordDaoImpl implements IAwardRecordDao {
     @Override
     public boolean updateMysqlAwardRecord(AwardRecord awardRecord) {
         //返回影响行数，为1表示修改成功
-        int result = jdbcTemplate.update("update award_record set operation=?,num=?,credit=? where arid=?"
-                , awardRecord.getOperation(), awardRecord.getNum(), awardRecord.getCredit(), awardRecord.getArid());
+        int result = jdbcTemplate.update("update award_record set operation=?,num=?,credit=?,time=?,remaining_count=? where arid=?", awardRecord.getOperation(), awardRecord.getNum(), awardRecord.getCredit(), awardRecord.getTime(), awardRecord.getRemaining_count(), awardRecord.getArid());
         return result > 0;
     }
 

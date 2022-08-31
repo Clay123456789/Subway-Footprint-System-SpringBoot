@@ -34,7 +34,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
         }
         String time = JWTUtil.getNowTime();
         String mid = award.getMid();
-        AwardRecord awardRecord = new AwardRecord(uid + "-" + aid + "-" + time, 0, uid, mid, aid, num, time, credit);
+        AwardRecord awardRecord = new AwardRecord(uid + "-" + aid + "-" + time, 0, uid, mid, aid, num, time, credit, num);
         //award数量需相应减少
         if (0 == award.getStatus() && award.getNum() >= num) {
             award.setNum(Math.max(award.getNum() - num, 0));
@@ -56,7 +56,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
             return false;
         }
         String time = JWTUtil.getNowTime();
-        AwardRecord awardRecord = new AwardRecord(mid + "-" + aid + "-" + time, 0, null, mid, aid, num, time, credit);
+        AwardRecord awardRecord = new AwardRecord(mid + "-" + aid + "-" + time, 0, null, mid, aid, num, time, credit, num);
         //award数量需相应减少
         if (0 == award.getStatus() && award.getNum() >= num) {
             award.setNum(Math.max(award.getNum() - num, 0));
@@ -81,6 +81,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
         AwardRecord awardRecord = isExistShoppingAwardRecord(aid, uid);
         if (null != awardRecord) {//有
             awardRecord.setNum(awardRecord.getNum() + 1);
+            awardRecord.setRemaining_count(awardRecord.getNum());
             awardRecord.setTime(JWTUtil.getNowTime());
             return awardRecordDao.updateMysqlAwardRecord(awardRecord);
         } else {//无
@@ -91,7 +92,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
             String time = JWTUtil.getNowTime();
             String mid = award.getMid();
             int credit = num * award.getCredit();
-            AwardRecord awardRecord2 = new AwardRecord(uid + "-" + aid + "-" + time, -1, uid, mid, aid, num, time, credit);
+            AwardRecord awardRecord2 = new AwardRecord(uid + "-" + aid + "-" + time, -1, uid, mid, aid, num, time, credit, num);
             return awardRecordDao.insertMysqlAwardRecord(awardRecord2);
         }
 
@@ -159,7 +160,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
         String time = JWTUtil.getNowTime();
         String mid = award.getMid();
         int credit = num * award.getCredit();
-        AwardRecord awardRecord = new AwardRecord(uid + "-" + aid + "-" + time, 2, uid, mid, aid, num, time, credit);
+        AwardRecord awardRecord = new AwardRecord(uid + "-" + aid + "-" + time, 2, uid, mid, aid, num, time, credit, num);
         award.setNum(award.getNum() - awardRecord.getNum());
         //若award剩余数量为0，状态改为已售空（2）
         if (0 == award.getNum()) {
@@ -232,6 +233,16 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
         awardRecord.setOperation(4);
         awardRecordDao.updateMysqlAwardRecord(awardRecord);
         return true;
+    }
+
+    @Override
+    public boolean useAwardRecord(String arid) {
+        AwardRecord awardRecord = getAnyAwardRecord(arid);
+        if (null != awardRecord && 1 == awardRecord.getOperation() && awardRecord.getRemaining_count() > 0) {
+            awardRecord.setRemaining_count(awardRecord.getRemaining_count() - 1);
+            return awardRecordDao.updateMysqlAwardRecord(awardRecord);
+        }
+        return false;
     }
 
     @Override

@@ -19,4 +19,5 @@ public class AwardRecord {
     private int num;//兑换/藏宝数目
     private String time;//兑换/藏宝时间
     private int credit;//（若为兑换）消耗碳积分
+    private int remaining_count;//剩余使用次数
 }
