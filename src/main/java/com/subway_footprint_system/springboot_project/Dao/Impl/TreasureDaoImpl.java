@@ -25,20 +25,21 @@ public class TreasureDaoImpl implements ITreasureDao {
      * 添加一行数据
      */
     @Override
-    public boolean insertTreasure(Treasure treasure){
-        try{
+    public boolean insertTreasure(Treasure treasure) {
+        try {
             //返回影响行数，为1即增加成功
             int result = jdbcTemplate.update("insert into treasure(tid,variety,content,credit,pid,fromdate,todate,status,uid,mid,uid2,getdate,message) values(?,?,?,?,?,?,?,?,?,?,?,?,?) ",
-            treasure.getTid(),treasure.getVariety(),treasure.getContent(),treasure.getCredit(),treasure.getPid(),treasure.getFromdate(),treasure.getTodate(),treasure.getStatus(),treasure.getUid(),treasure.getMid(),treasure.getUid2(),treasure.getGetdate(),treasure.getMessage());
-            if(1==result) {
+                    treasure.getTid(), treasure.getVariety(), treasure.getContent(), treasure.getCredit(), treasure.getPid(), treasure.getFromdate(), treasure.getTodate(), treasure.getStatus(), treasure.getUid(), treasure.getMid(), treasure.getUid2(), treasure.getGetdate(), treasure.getMessage());
+            if (1 == result) {
                 return true;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
         return false;
     }
+
     /**
      * 删除一行数据
      */
@@ -46,8 +47,8 @@ public class TreasureDaoImpl implements ITreasureDao {
     public boolean deleteTreasure(String tid) {
         try {
             //返回影响行数，为1即删除成功
-            int result=jdbcTemplate.update("delete from treasure where tid=?",tid);
-            if(1==result){
+            int result = jdbcTemplate.update("delete from treasure where tid=?", tid);
+            if (1 == result) {
                 return true;
             }
         } catch (Exception e) {
@@ -61,9 +62,9 @@ public class TreasureDaoImpl implements ITreasureDao {
     public boolean updateTreasure(Treasure treasure) {
         try {
             //返回影响行数，为1表示修改成功
-            int result=jdbcTemplate.update("update treasure set variety=?,content=?,credit=?,pid=?,fromdate=?,todate=?,status=?,uid=?,mid=?,uid2=?,getdate=?,message=? where tid=?",
-                    treasure.getVariety(),treasure.getContent(),treasure.getCredit(),treasure.getPid(),treasure.getFromdate(),treasure.getTodate(),treasure.getStatus(),treasure.getUid(),treasure.getMid(),treasure.getUid2(),treasure.getGetdate(),treasure.getMessage(),treasure.getTid());
-            if(1==result){
+            int result = jdbcTemplate.update("update treasure set variety=?,content=?,credit=?,pid=?,fromdate=?,todate=?,status=?,uid=?,mid=?,uid2=?,getdate=?,message=? where tid=?",
+                    treasure.getVariety(), treasure.getContent(), treasure.getCredit(), treasure.getPid(), treasure.getFromdate(), treasure.getTodate(), treasure.getStatus(), treasure.getUid(), treasure.getMid(), treasure.getUid2(), treasure.getGetdate(), treasure.getMessage(), treasure.getTid());
+            if (1 == result) {
                 return true;
             }
         } catch (Exception e) {
@@ -72,47 +73,50 @@ public class TreasureDaoImpl implements ITreasureDao {
         }
         return false;
     }
+
     /**
      * 获取一行数据
      */
     @Override
     public Treasure getTreasure(String tid) {
         RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
-        Object object =null;
+        Object object = null;
         try {
-            object = jdbcTemplate.queryForObject("select * from treasure where tid=?",rowMapper,tid);
+            object = jdbcTemplate.queryForObject("select * from treasure where tid=?", rowMapper, tid);
         } catch (EmptyResultDataAccessException e) {
             //查询结果为空
             return null;
         }
         return (Treasure) object;
     }
+
     /**
      * 获取指定站点pid的所有记录
-     *  查询的是未被挖走的宝箱
+     * 查询的是未被挖走的宝箱
      */
     @Override
     public List<Treasure> getPositionTreasure(String pid) {
-        List<Treasure> list=null;
+        List<Treasure> list = null;
         try {
             RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
-            list =jdbcTemplate.query("select * from treasure where pid=? and status=0 order by fromdate ASC",rowMapper,pid);
+            list = jdbcTemplate.query("select * from treasure where pid=? and status=0 order by fromdate ASC", rowMapper, pid);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
         return list;
     }
+
     /**
      * 获取所有记录
      * 查询的是未被挖走的宝箱
      */
     @Override
     public List<Treasure> getAllTreasure() {
-        List<Treasure> list=null;
+        List<Treasure> list = null;
         try {
             RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
-            list =jdbcTemplate.query("select * from treasure where status=0 order by fromdate ASC",rowMapper);
+            list = jdbcTemplate.query("select * from treasure where status=0 order by fromdate ASC", rowMapper);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -122,10 +126,10 @@ public class TreasureDaoImpl implements ITreasureDao {
 
     @Override
     public List<Treasure> getUserTreasure(String uid2) {
-        List<Treasure> list=null;
+        List<Treasure> list = null;
         try {
             RowMapper<Treasure> rowMapper = new BeanPropertyRowMapper<Treasure>(Treasure.class);
-            list =jdbcTemplate.query("select * from treasure where uid2=? order by status ASC,getdate ASC",rowMapper,uid2);
+            list = jdbcTemplate.query("select * from treasure where uid2=? order by status ASC,getdate ASC", rowMapper, uid2);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

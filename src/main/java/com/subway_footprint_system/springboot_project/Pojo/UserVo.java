@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor//不带参数的构造方法
 @AllArgsConstructor//全构造方法
 @ToString(callSuper = true)//callSuper = true表示带上父类参数
-public class UserVo extends User{
+public class UserVo extends User {
 
     //    验证码
     private String code;

@@ -27,6 +27,7 @@ public class UserController {
     private UserServiceImpl userService;
     @Autowired
     private EMailServiceImpl eMailService;
+
     /*
      * 请求方式：post
      * 功能：登录
@@ -38,7 +39,7 @@ public class UserController {
     @RequestMapping(value = "/user/login", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     @ResponseBody
     public Result login(@Valid @RequestBody UserVo userVo, BindingResult bindingResult) {
-        if (userVo.getUsername().equals("")||userVo.getPassword().equals("")) {
+        if (userVo.getUsername().equals("") || userVo.getPassword().equals("")) {
             String message = String.format("账号或密码不能为空！");
             return ResultFactory.buildFailResult(message);
         }
@@ -46,7 +47,7 @@ public class UserController {
             String message = String.format("登陆失败，详细信息[%s]。", bindingResult.getFieldError().getDefaultMessage());
             return ResultFactory.buildFailResult(message);
         }
-        String uid=null;
+        String uid = null;
         if (!userService.judgeByUsername(userVo)) {
             //用户名不存在，判断是否为Emial登录用户
             userVo.setEmail(userVo.getUsername());
@@ -54,15 +55,15 @@ public class UserController {
                 String message = String.format("登陆失败，账号/密码信息不正确。");
                 return ResultFactory.buildFailResult(message);
             }
-            User user=userService.getUserByEmail(userVo.getEmail());
-            uid=user.getUid();
-        }else{
-            uid=userService.getUserByUsername(userVo.getUsername()).getUid();
+            User user = userService.getUserByEmail(userVo.getEmail());
+            uid = user.getUid();
+        } else {
+            uid = userService.getUserByUsername(userVo.getUsername()).getUid();
         }
         //已注册
         Map<String, String> map = new HashMap<>(); //用来存放payload信息
-        map.put("uid",uid);
-        map.put("email",userVo.getEmail());
+        map.put("uid", uid);
+        map.put("email", userVo.getEmail());
         // 生成token令牌
         String token = JWTUtil.generateToken(map);
         return ResultFactory.buildSuccessResult(token);
@@ -79,7 +80,7 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/user/sendRegistEmail")
     @ResponseBody
-    public Result sendRegistEmail(@Valid @RequestBody UserVo userVo , HttpSession httpSession ) {
+    public Result sendRegistEmail(@Valid @RequestBody UserVo userVo, HttpSession httpSession) {
         /*
          * 使用HttpSession在服务器与浏览器建立对话，以验证邮箱验证码
          * */
@@ -108,7 +109,6 @@ public class UserController {
     }
 
 
-
     /*
      * 请求方式：post
      * 功能：找回密码
@@ -119,8 +119,8 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/user/findPassword")
     @ResponseBody
-    public Result findPassWord(@Valid @RequestBody UserVo userVo){
-        if(!eMailService.findPassword_sendEmail_user(userVo.getEmail())){
+    public Result findPassWord(@Valid @RequestBody UserVo userVo) {
+        if (!eMailService.findPassword_sendEmail_user(userVo.getEmail())) {
             return ResultFactory.buildFailResult("此邮箱非您注册时使用的邮箱,找回失败！");
         }
         return ResultFactory.buildSuccessResult("找回成功,密码已发送至您的邮箱！");
@@ -137,8 +137,8 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/user/changePassword")
     @ResponseBody
-    public Result changePassword(@Valid @RequestBody UserVo userVo){
-        if(!eMailService.changePassword_user(userVo)){
+    public Result changePassword(@Valid @RequestBody UserVo userVo) {
+        if (!eMailService.changePassword_user(userVo)) {
             return ResultFactory.buildFailResult("信息有误,修改失败！");
         }
         return ResultFactory.buildSuccessResult("修改密码成功！");
@@ -152,7 +152,7 @@ public class UserController {
      * 返回值(json--Result) code,message,data(User)一个完整的User类实例
      * */
     @CrossOrigin
-    @PostMapping(value ="/user/getUser")
+    @PostMapping(value = "/user/getUser")
     @ResponseBody
     public Result getUser(HttpServletRequest request) {
         try {
@@ -162,7 +162,7 @@ public class UserController {
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String uid = decodedJWT.getClaim("uid").asString();
             return ResultFactory.buildSuccessResult(userService.getUserByUid(uid));
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("出现异常！");
         }
@@ -176,9 +176,9 @@ public class UserController {
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
-    @PostMapping(value ="/user/updateUser")
+    @PostMapping(value = "/user/updateUser")
     @ResponseBody
-    public Result updateUser(HttpServletRequest request,@Valid @RequestBody UserVo userVo){
+    public Result updateUser(HttpServletRequest request, @Valid @RequestBody UserVo userVo) {
         try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");
@@ -191,7 +191,7 @@ public class UserController {
                 return ResultFactory.buildSuccessResult("已成功修个人信息！");
             }
             return ResultFactory.buildFailResult("更改个人信息失败！");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("出现异常！");
         }

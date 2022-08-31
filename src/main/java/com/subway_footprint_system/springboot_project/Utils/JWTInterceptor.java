@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+
 @Component
 @Slf4j
 public class JWTInterceptor implements HandlerInterceptor {
@@ -29,7 +30,7 @@ public class JWTInterceptor implements HandlerInterceptor {
         try {
             JWTUtil.getTokenInfo(token);//验证令牌
             return true;//放行请求
-        } catch (NullPointerException | SignatureVerificationException e){
+        } catch (NullPointerException | SignatureVerificationException e) {
             e.printStackTrace();
             map.put("msg", "无效签名!");
         } catch (TokenExpiredException e) {

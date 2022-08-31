@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 @Service
 public class MerchantServiceImpl implements IMerchantService {
@@ -30,7 +29,7 @@ public class MerchantServiceImpl implements IMerchantService {
 
     @Override
     public boolean updateMerchant(MerchantVo merchantVo) {
-        if(null!=merchantVo.getMid())
+        if (null != merchantVo.getMid())
             return merchantDao.updateMerchant(merchantVo);
         return false;
     }
@@ -38,11 +37,11 @@ public class MerchantServiceImpl implements IMerchantService {
     @Override
     public boolean updatePassword(MerchantVo merchantVo) {
         //先判断用户是否合法
-        if(judgeByEmail(merchantVo)){
+        if (judgeByEmail(merchantVo)) {
             //获取用户原信息
-            Merchant merchant= getMerchantByEmail(merchantVo.getEmail());
+            Merchant merchant = getMerchantByEmail(merchantVo.getEmail());
             //修改密码
-            return merchantDao.changePassword(merchant.getMid(),merchantVo.getNewPassword());
+            return merchantDao.changePassword(merchant.getMid(), merchantVo.getNewPassword());
         }
         return false;
     }
@@ -65,9 +64,9 @@ public class MerchantServiceImpl implements IMerchantService {
     @Override
     public boolean judgeByMid(MerchantVo merchantVo) {
         //根据id查询该用户信息
-        Merchant merchant=merchantDao.getMerchantByMid(merchantVo.getMid());
+        Merchant merchant = merchantDao.getMerchantByMid(merchantVo.getMid());
         //用户存在且密码相同，返回真
-        if(merchant!=null&&merchantVo.getPassword()!=null){
+        if (merchant != null && merchantVo.getPassword() != null) {
             return merchant.getPassword().equals(merchantVo.getPassword());
         }
         return false;
@@ -76,9 +75,9 @@ public class MerchantServiceImpl implements IMerchantService {
     @Override
     public boolean judgeByAccount(MerchantVo merchantVo) {
         //根据账号查询该用户信息
-        Merchant merchant=merchantDao.getMerchantByAccount(merchantVo.getAccount());
+        Merchant merchant = merchantDao.getMerchantByAccount(merchantVo.getAccount());
         //用户存在且密码相同，返回真
-        if(merchant!=null&&merchantVo.getPassword()!=null){
+        if (merchant != null && merchantVo.getPassword() != null) {
             return merchant.getPassword().equals(merchantVo.getPassword());
         }
         return false;
@@ -87,9 +86,9 @@ public class MerchantServiceImpl implements IMerchantService {
     @Override
     public boolean judgeByEmail(MerchantVo merchantVo) {
         //根据账号查询该用户信息
-        Merchant merchant=merchantDao.getMerchantByEmail(merchantVo.getEmail());
+        Merchant merchant = merchantDao.getMerchantByEmail(merchantVo.getEmail());
         //用户存在且密码相同，返回真
-        if(merchant!=null&&merchantVo.getPassword()!=null){
+        if (merchant != null && merchantVo.getPassword() != null) {
             return merchant.getPassword().equals(merchantVo.getPassword());
         }
         return false;
@@ -97,7 +96,7 @@ public class MerchantServiceImpl implements IMerchantService {
 
     @Override
     public boolean submitAuthentication(Merchant merchant) {
-        if(null!=merchant.getMid()){
+        if (null != merchant.getMid()) {
             merchant.setAuthenticated(0);
             merchant.setTime(JWTUtil.getNowTime());
             return merchantDao.updateAuthentication(merchant);
@@ -107,15 +106,15 @@ public class MerchantServiceImpl implements IMerchantService {
 
     @Override
     public boolean checkAuthentication(String mid) throws ParseException {
-        Merchant merchant=merchantDao.getMerchantByMid(mid);
-        if(null!=merchant&&1==merchant.getAuthenticated()){
+        Merchant merchant = merchantDao.getMerchantByMid(mid);
+        if (null != merchant && 1 == merchant.getAuthenticated()) {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
-            long time=formatter.parse(JWTUtil.getNowTime()).getTime() - formatter.parse(merchant.getTime()).getTime();
-            if(time / (24 * 60 * 60 * 1000)>365){//证书达到一年有效期
+            long time = formatter.parse(JWTUtil.getNowTime()).getTime() - formatter.parse(merchant.getTime()).getTime();
+            if (time / (24 * 60 * 60 * 1000) > 365) {//证书达到一年有效期
                 merchant.setAuthenticated(2);//2表示过期
                 merchantDao.updateAuthentication(merchant);
                 return false;
-            }else{
+            } else {
                 return true;
             }
         }

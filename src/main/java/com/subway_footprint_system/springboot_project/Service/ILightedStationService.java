@@ -7,7 +7,10 @@ import java.util.List;
 public interface ILightedStationService {
     //增删改查方法
     boolean insertLightedStation(LightedStation lightedStation);
-    boolean deleteLightedStation(String uid,String pid);
-    LightedStation getLightedStation(String uid,String pid);
+
+    boolean deleteLightedStation(String uid, String pid);
+
+    LightedStation getLightedStation(String uid, String pid);
+
     List<LightedStation> getUserLightedStations(String uid);
 }

@@ -10,12 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,12 +34,12 @@ public class SubwayDaoImpl implements ISubwayDao {
     @Override
     public boolean insertSubway(Subway subway) {
         //返回影响行数，为1即增加成功
-        int result= jdbcTemplate.update("insert into subway(sid,code,cn_name,cename,cpre,l_xmlattr,p) values(?,?,?,?,?,?,?)",
-                subway.getSid(),subway.getCode(),subway.getCn_name(),subway.getCename(),subway.getCpre(), JSONObject.toJSONString(subway.getL_xmlattr()),JSONObject.toJSONString(subway.getP()));
-        if(result>0){
+        int result = jdbcTemplate.update("insert into subway(sid,code,cn_name,cename,cpre,l_xmlattr,p) values(?,?,?,?,?,?,?)",
+                subway.getSid(), subway.getCode(), subway.getCn_name(), subway.getCename(), subway.getCpre(), JSONObject.toJSONString(subway.getL_xmlattr()), JSONObject.toJSONString(subway.getP()));
+        if (result > 0) {
             // 判断是否缓存存在
             String key1 = "subway_list";
-            String key2 = "subway_"+subway.getCode();
+            String key2 = "subway_" + subway.getCode();
             Boolean hasKey1 = redisTemplate.hasKey(key1);
             Boolean hasKey2 = redisTemplate.hasKey(key2);
             // 缓存存在，进行删除
@@ -53,13 +50,11 @@ public class SubwayDaoImpl implements ISubwayDao {
                 redisTemplate.delete(key2);
             }
             return true;
-        }
-        else{
+        } else {
             return false;
         }
 
     }
-
 
 
     /**
@@ -68,35 +63,34 @@ public class SubwayDaoImpl implements ISubwayDao {
      */
     @Override
     public boolean deleteSubway(String sid) {
-       Subway subway= getSubway(sid);
-       if(subway!=null){
-           int  result=   jdbcTemplate.update("delete from subway where sid = ?",sid);
-           if(result!=0){
-               // 判断是否缓存存在
-               String key = "subway_" + subway.getSid();
-               String key1 = "subway_list";
-               String key2 = "subway_"+subway.getCode();
-               Boolean hasKey = redisTemplate.hasKey(key);
-               // 缓存存在，进行删除
-               if (hasKey) {
-                   redisTemplate.delete(key);
-               }
-               Boolean hasKey1 = redisTemplate.hasKey(key1);
-               // 缓存存在，进行删除
-               if (hasKey1) {
-                   redisTemplate.delete(key1);
-               }
-               Boolean hasKey2 = redisTemplate.hasKey(key2);
-               // 缓存存在，进行删除
-               if (hasKey2) {
-                   redisTemplate.delete(key2);
-               }
-               return true;
-           }
-           else{
-               return false;
-           }
-       }
+        Subway subway = getSubway(sid);
+        if (subway != null) {
+            int result = jdbcTemplate.update("delete from subway where sid = ?", sid);
+            if (result != 0) {
+                // 判断是否缓存存在
+                String key = "subway_" + subway.getSid();
+                String key1 = "subway_list";
+                String key2 = "subway_" + subway.getCode();
+                Boolean hasKey = redisTemplate.hasKey(key);
+                // 缓存存在，进行删除
+                if (hasKey) {
+                    redisTemplate.delete(key);
+                }
+                Boolean hasKey1 = redisTemplate.hasKey(key1);
+                // 缓存存在，进行删除
+                if (hasKey1) {
+                    redisTemplate.delete(key1);
+                }
+                Boolean hasKey2 = redisTemplate.hasKey(key2);
+                // 缓存存在，进行删除
+                if (hasKey2) {
+                    redisTemplate.delete(key2);
+                }
+                return true;
+            } else {
+                return false;
+            }
+        }
         return false;
     }
 
@@ -109,12 +103,12 @@ public class SubwayDaoImpl implements ISubwayDao {
     public boolean updateSubway(Subway subway) {
         //返回影响行数，为1表示修改成功
         int result = jdbcTemplate.update("update subway set code=?,cn_name=?,cename=?,cpre,l_xmlattr=?,p=? where sid=? "
-                ,subway.getCode(),subway.getCn_name(),subway.getCename(),subway.getCpre(), JSONObject.toJSONString(subway.getL_xmlattr()), JSONObject.toJSONString(subway.getP()),subway.getSid());
-        if(result > 0){
+                , subway.getCode(), subway.getCn_name(), subway.getCename(), subway.getCpre(), JSONObject.toJSONString(subway.getL_xmlattr()), JSONObject.toJSONString(subway.getP()), subway.getSid());
+        if (result > 0) {
             // 判断是否缓存存在
             String key = "subway_" + subway.getSid();
             String key1 = "subway_list";
-            String key2 = "subway_"+subway.getCode();
+            String key2 = "subway_" + subway.getCode();
             Boolean hasKey = redisTemplate.hasKey(key);
             // 缓存存在，进行删除
             if (hasKey) {
@@ -167,10 +161,10 @@ public class SubwayDaoImpl implements ISubwayDao {
             String str = new Gson().toJson(subway);
             operations.set(key, str, 60 * 10, TimeUnit.SECONDS);//向redis里存入数据,设置缓存时间为10min
             return subway;
-        }catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             e.printStackTrace();
         }
-           return null;
+        return null;
     }
 
     @Override
@@ -184,70 +178,70 @@ public class SubwayDaoImpl implements ISubwayDao {
             return JSONObject.parseObject((String) operations.get(key));
         }
         //缓存中不存在
-        List<Map<String, Object>> maplist =new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> maplist = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
         //先找到所有城市代码
-        List<Map<String, Object>> list1= jdbcTemplate.queryForList("select DISTINCT code from subway order by code ASC ");
-       //依次找到线路和站点信息，并添加map
+        List<Map<String, Object>> list1 = jdbcTemplate.queryForList("select DISTINCT code from subway order by code ASC ");
+        //依次找到线路和站点信息，并添加map
         for (Map<String, Object> temp : list1) {
-            List<Map<String, Object>> sonmap1 =new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> sonmap1 = new ArrayList<Map<String, Object>>();
             Map<String, Object> map1 = new HashMap<String, Object>();
-           List<Map<String, Object>> list2= jdbcTemplate.queryForList("select *  from subway where code=? order by sid ASC",temp.get("code"));
+            List<Map<String, Object>> list2 = jdbcTemplate.queryForList("select *  from subway where code=? order by sid ASC", temp.get("code"));
             //构建map数组
-           for (int j = 0; j <list2.size(); j++) {
-                List<Map<String,Object>> pmaplist = (List<Map<String,Object>>) JSONArray.parse((String) list2.get(j).get("p"));
-                Map<String, Object> l_xmlattrmap= JSONObject.parseObject((String)list2.get(j).get("l_xmlattr"));
+            for (int j = 0; j < list2.size(); j++) {
+                List<Map<String, Object>> pmaplist = (List<Map<String, Object>>) JSONArray.parse((String) list2.get(j).get("p"));
+                Map<String, Object> l_xmlattrmap = JSONObject.parseObject((String) list2.get(j).get("l_xmlattr"));
                 Map<String, Object> sonmap = new HashMap<String, Object>();
-                List<Map<String, Object>> sonmap2=new ArrayList<Map<String, Object>>();
-                sonmap.put("p",pmaplist);
+                List<Map<String, Object>> sonmap2 = new ArrayList<Map<String, Object>>();
+                sonmap.put("p", pmaplist);
                 sonmap2.add(l_xmlattrmap);
                 sonmap.put("l_xmlattr", sonmap2);
                 sonmap1.add(sonmap);
             }
             Map<String, Object> sonmap2 = new HashMap<String, Object>();
-            sonmap2.put("code",list2.get(0).get("code"));
-            sonmap2.put("cn_name",list2.get(0).get("cn_name"));
-            sonmap2.put("cename",list2.get(0).get("cename"));
-            map1.put("l",sonmap1);
-            map1.put("sw_xmlattr",sonmap2);
+            sonmap2.put("code", list2.get(0).get("code"));
+            sonmap2.put("cn_name", list2.get(0).get("cn_name"));
+            sonmap2.put("cename", list2.get(0).get("cename"));
+            map1.put("l", sonmap1);
+            map1.put("sw_xmlattr", sonmap2);
             maplist.add(map1);
         }
-        map.put("subways",maplist);
+        map.put("subways", maplist);
         String toJson = JSON.toJSONString(map);
         // 加到缓存中
-        operations.set(key, toJson, 10*60, TimeUnit.SECONDS);
+        operations.set(key, toJson, 10 * 60, TimeUnit.SECONDS);
         return map;
     }
 
     @Override
     public Map<String, Object> getAllSubways(int code) {
-        String key = "subway_"+code;
+        String key = "subway_" + code;
         Boolean hasKey = redisTemplate.hasKey(key);
 
         ValueOperations operations = redisTemplate.opsForValue();
         //缓存中存在
         if (hasKey) {
-            return JSONObject.parseObject((String)operations.get(key));
+            return JSONObject.parseObject((String) operations.get(key));
         }
         //缓存中不存在
-        List<Map<String, Object>> list= jdbcTemplate.queryForList("select * from subway where code = ? order by sid ASC ",code);
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select * from subway where code = ? order by sid ASC ", code);
         //构建map数组
-        List<Map<String, Object>> maplist =new ArrayList<Map<String, Object>>();
-        for (int i = 0; i <list.size(); i++) {
-            List<Map<String,Object>> pmaplist = (List<Map<String,Object>>) JSONArray.parse((String) list.get(i).get("p"));
-            Map<String, Object> l_xmlattrmap= JSONObject.parseObject((String)list.get(i).get("l_xmlattr"));
+        List<Map<String, Object>> maplist = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < list.size(); i++) {
+            List<Map<String, Object>> pmaplist = (List<Map<String, Object>>) JSONArray.parse((String) list.get(i).get("p"));
+            Map<String, Object> l_xmlattrmap = JSONObject.parseObject((String) list.get(i).get("l_xmlattr"));
             Map<String, Object> sonmap = new HashMap<String, Object>();
-            List<Map<String, Object>> sonmap2=new ArrayList<Map<String, Object>>();
-            sonmap.put("p",pmaplist);
+            List<Map<String, Object>> sonmap2 = new ArrayList<Map<String, Object>>();
+            sonmap.put("p", pmaplist);
             sonmap2.add(l_xmlattrmap);
             sonmap.put("l_xmlattr", sonmap2);
             maplist.add(sonmap);
         }
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("l",maplist);
+        map.put("l", maplist);
         String toJson = JSON.toJSONString(map);
         // 加到缓存中
-        operations.set(key, toJson, 10*60, TimeUnit.SECONDS);
+        operations.set(key, toJson, 10 * 60, TimeUnit.SECONDS);
         return map;
     }
 }

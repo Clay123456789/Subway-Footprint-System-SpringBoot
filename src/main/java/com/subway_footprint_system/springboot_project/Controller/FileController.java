@@ -24,6 +24,7 @@ import java.util.Map;
 public class FileController {
     @Autowired
     private FtpUtil ftpUtil;
+
     /*
      * 请求方式：post
      * 功能：上传files
@@ -32,39 +33,40 @@ public class FileController {
      * 返回值(json--Result) code,message,data(List<String> urlList)
      * */
     @CrossOrigin
-    @PostMapping(value ="/file/uploadFiles")
+    @PostMapping(value = "/file/uploadFiles")
     @ResponseBody
     public Result uploadFiles(@RequestParam("files") MultipartFile[] files) throws IOException {
-        List<File> filelist=new ArrayList<>();
-        for (MultipartFile mfile :files) {
+        List<File> filelist = new ArrayList<>();
+        for (MultipartFile mfile : files) {
             File file = new File(mfile.getOriginalFilename());
             FileUtils.copyInputStreamToFile(mfile.getInputStream(), file);
             filelist.add(file);
         }
 
         //上传得到原图url列表
-        List<String> urlList= ftpUtil.ftpUpload(filelist);
+        List<String> urlList = ftpUtil.ftpUpload(filelist);
         //资源释放
-        for (File file:filelist) {
-            if(file.exists()){
+        for (File file : filelist) {
+            if (file.exists()) {
                 file.delete();
             }
         }
-        if (urlList!=null){
-            List<String> filenames=new ArrayList<>();
-            for (String url :urlList) {
-                String filename=url.substring(url.lastIndexOf("/")+1);
+        if (urlList != null) {
+            List<String> filenames = new ArrayList<>();
+            for (String url : urlList) {
+                String filename = url.substring(url.lastIndexOf("/") + 1);
                 filenames.add(filename);
             }
             //对图片进行压缩，得到略缩图并返回
-            urlList=ftpUtil.ftpCompress(ftpUtil.DEFAULT_SCALE,filenames);
-            if(null!=urlList){
+            urlList = ftpUtil.ftpCompress(ftpUtil.DEFAULT_SCALE, filenames);
+            if (null != urlList) {
                 return ResultFactory.buildSuccessResult(urlList);
             }
         }
 
         return ResultFactory.buildFailResult("上传失败");
     }
+
     /*
      * 请求方式：post
      * 功能：上传图片(头像）
@@ -73,10 +75,10 @@ public class FileController {
      * 返回值(json--Result) code,message,data(url)
      * */
     @CrossOrigin
-    @PostMapping(value ="/file/uploadImage")
+    @PostMapping(value = "/file/uploadImage")
     @ResponseBody
     public Result uploadImage(@RequestParam("file") MultipartFile mfile) {
-        List<File> filelist=new ArrayList<>();
+        List<File> filelist = new ArrayList<>();
         File file = new File(mfile.getOriginalFilename());
         try {
             FileUtils.copyInputStreamToFile(mfile.getInputStream(), file);
@@ -86,24 +88,25 @@ public class FileController {
         filelist.add(file);
 
         //上传得到原图url列表
-        List<String> urlList= ftpUtil.ftpUpload(filelist);
+        List<String> urlList = ftpUtil.ftpUpload(filelist);
         //资源释放
-         file.delete();
-        if (urlList!=null){
-            List<String> filenames=new ArrayList<>();
-            for (String url :urlList) {
-                String filename=url.substring(url.lastIndexOf("/")+1);
+        file.delete();
+        if (urlList != null) {
+            List<String> filenames = new ArrayList<>();
+            for (String url : urlList) {
+                String filename = url.substring(url.lastIndexOf("/") + 1);
                 filenames.add(filename);
             }
             //对图片进行压缩，得到略缩图并返回
-            urlList=ftpUtil.ftpCompress(ftpUtil.DEFAULT_SCALE,filenames);
-            if(null!=urlList){
+            urlList = ftpUtil.ftpCompress(ftpUtil.DEFAULT_SCALE, filenames);
+            if (null != urlList) {
                 return ResultFactory.buildSuccessResult(urlList);
             }
         }
 
         return ResultFactory.buildFailResult("上传失败");
     }
+
     /*
      * 请求方式：post
      * 功能：上传图片(头像）
@@ -124,7 +127,7 @@ public class FileController {
                     MultipartFile file = file_list.get("file");
                     if (file != null) {
                         //上传得到原图url列表
-                        List<File> filelist=new ArrayList<>();
+                        List<File> filelist = new ArrayList<>();
                         File mfile = new File(file.getOriginalFilename());
                         try {
                             FileUtils.copyInputStreamToFile(file.getInputStream(), mfile);
@@ -132,18 +135,18 @@ public class FileController {
                             e.printStackTrace();
                         }
                         filelist.add(mfile);
-                        List<String> urlList= ftpUtil.ftpUpload(filelist);
+                        List<String> urlList = ftpUtil.ftpUpload(filelist);
                         //资源释放
                         mfile.delete();
-                        if (urlList!=null){
-                            List<String> filenames=new ArrayList<>();
-                            for (String url :urlList) {
-                                String filename=url.substring(url.lastIndexOf("/")+1);
+                        if (urlList != null) {
+                            List<String> filenames = new ArrayList<>();
+                            for (String url : urlList) {
+                                String filename = url.substring(url.lastIndexOf("/") + 1);
                                 filenames.add(filename);
                             }
                             //对图片进行压缩，得到略缩图并返回
-                            urlList=ftpUtil.ftpCompress(ftpUtil.DEFAULT_SCALE,filenames);
-                            if(null!=urlList){
+                            urlList = ftpUtil.ftpCompress(ftpUtil.DEFAULT_SCALE, filenames);
+                            if (null != urlList) {
                                 return ResultFactory.buildSuccessResult(urlList);
                             }
                         }
@@ -166,11 +169,11 @@ public class FileController {
      * */
     @CrossOrigin
     @RequestMapping(value = "/file/getOriginalImage", method = RequestMethod.GET)
-    public Result getOriginalImage( String url){
-        String originalImagePath=null;
+    public Result getOriginalImage(String url) {
+        String originalImagePath = null;
         try {
-            originalImagePath=ftpUtil.getOriginalImage(url);
-        }catch (Exception e){
+            originalImagePath = ftpUtil.getOriginalImage(url);
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("获取失败！");
         }

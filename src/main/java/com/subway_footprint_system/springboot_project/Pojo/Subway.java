@@ -1,4 +1,5 @@
 package com.subway_footprint_system.springboot_project.Pojo;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

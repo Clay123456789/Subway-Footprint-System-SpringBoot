@@ -17,6 +17,7 @@ public class ManagerServiceImpl implements IManagerService {
     private ManagerDaoImpl managerDao;
     @Autowired
     private MerchantDaoImpl merchantDao;
+
     @Override
     public Manager getManagerByManagerId(String managerID) {
         return managerDao.getManagerByManagerId(managerID);
@@ -39,9 +40,9 @@ public class ManagerServiceImpl implements IManagerService {
 
     @Override
     public boolean checkAuthentication(String mid, boolean isApproved) {
-        Merchant merchant=merchantDao.getMerchantByMid(mid);
-        if(null!=merchant&&0==merchant.getAuthenticated()){
-            merchant.setAuthenticated(isApproved?1:-2);
+        Merchant merchant = merchantDao.getMerchantByMid(mid);
+        if (null != merchant && 0 == merchant.getAuthenticated()) {
+            merchant.setAuthenticated(isApproved ? 1 : -2);
             return merchantDao.updateAuthentication(merchant);
         }
         return false;

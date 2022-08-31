@@ -30,6 +30,6 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
                 .excludePathPatterns("/websocket/**")
                 .excludePathPatterns("/scanSuccess/**")
 
-              .addPathPatterns("/**"); // 其他非登录接口都需要进行token验证
+                .addPathPatterns("/**"); // 其他非登录接口都需要进行token验证
     }
 }

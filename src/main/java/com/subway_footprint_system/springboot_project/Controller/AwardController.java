@@ -4,7 +4,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
 import com.subway_footprint_system.springboot_project.Pojo.Award;
 import com.subway_footprint_system.springboot_project.Pojo.Result;
-import com.subway_footprint_system.springboot_project.Service.Impl.AwardRecordServiceImpl;
 import com.subway_footprint_system.springboot_project.Service.Impl.AwardServiceImpl;
 import com.subway_footprint_system.springboot_project.Utils.FtpUtil;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
@@ -39,8 +38,8 @@ public class AwardController {
     @CrossOrigin
     @PostMapping(value = "/award/addAward")
     @ResponseBody
-    public Result addAward(@Valid @RequestBody Award award,HttpServletRequest request) {
-        award.setAid("aid-"+ftpUtil.getRandom(20));
+    public Result addAward(@Valid @RequestBody Award award, HttpServletRequest request) {
+        award.setAid("aid-" + ftpUtil.getRandom(20));
         award.setFromdate(JWTUtil.getNowTime());
         award.setStatus(0);
         try {
@@ -49,22 +48,21 @@ public class AwardController {
             // 根据token解析出mid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String token_mid = decodedJWT.getClaim("mid").asString();
-            if(token_mid!=null){
+            if (token_mid != null) {
                 award.setMid(token_mid);
-            }else if(null==decodedJWT.getClaim("managerID").asString()){
+            } else if (null == decodedJWT.getClaim("managerID").asString()) {
                 return ResultFactory.buildFailResult("出现异常！");
             }
-            if(awardService.insertAward(award)){
+            if (awardService.insertAward(award)) {
                 return ResultFactory.buildSuccessResult("已成功添加奖品");
             }
             return ResultFactory.buildFailResult("添加失败！");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("出现异常！");
         }
 
     }
-
 
 
     /*
@@ -78,10 +76,10 @@ public class AwardController {
     @PostMapping(value = "/award/getSomeAwards")
     @ResponseBody
     public Result getSomeAwards(int num) {
-        List<Award> list=awardService.getSomeAwards(num);
-        if(null==list){
+        List<Award> list = awardService.getSomeAwards(num);
+        if (null == list) {
             return ResultFactory.buildFailResult("获取失败！");
-        }else{
+        } else {
             return ResultFactory.buildSuccessResult(list);
         }
 
@@ -98,10 +96,10 @@ public class AwardController {
     @PostMapping(value = "/award/getAward")
     @ResponseBody
     public Result getAward(String aid) {
-        Award award=awardService.getAward(aid);
-        if(award==null){
+        Award award = awardService.getAward(aid);
+        if (award == null) {
             return ResultFactory.buildFailResult("获取失败！");
-        }else{
+        } else {
             return ResultFactory.buildSuccessResult(award);
         }
 
@@ -118,26 +116,26 @@ public class AwardController {
     @CrossOrigin
     @PostMapping(value = "/award/getMerchantAwards")
     @ResponseBody
-    public Result getMerchantAwards(HttpServletRequest request,String mid) {
+    public Result getMerchantAwards(HttpServletRequest request, String mid) {
         try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");
             // 根据token解析出mid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String token_mid = decodedJWT.getClaim("mid").asString();
-            if(token_mid!=null){
-                List<Award> list=awardService.getMerchantAwards(token_mid);
-                if(null!=list) {
+            if (token_mid != null) {
+                List<Award> list = awardService.getMerchantAwards(token_mid);
+                if (null != list) {
                     return ResultFactory.buildSuccessResult(list);
                 }
-            }else if(decodedJWT.getClaim("managerID").asString()!=null&&!mid.equals("")){
-                List<Award> list=awardService.getMerchantAwards(mid);
-                if(null!=list) {
+            } else if (decodedJWT.getClaim("managerID").asString() != null && !mid.equals("")) {
+                List<Award> list = awardService.getMerchantAwards(mid);
+                if (null != list) {
                     return ResultFactory.buildSuccessResult(list);
                 }
             }
             return ResultFactory.buildFailResult("获取失败！");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("出现异常！");
         }
@@ -155,10 +153,10 @@ public class AwardController {
     @PostMapping(value = "/award/getAllAwards")
     @ResponseBody
     public Result getAllAwards() {
-        List<Award> list=awardService.getAllAwards();
-        if(null==list){
+        List<Award> list = awardService.getAllAwards();
+        if (null == list) {
             return ResultFactory.buildFailResult("获取失败！");
-        }else{
+        } else {
             return ResultFactory.buildSuccessResult(list);
         }
 
@@ -174,7 +172,7 @@ public class AwardController {
     @CrossOrigin
     @PostMapping(value = "/award/updateAward")
     @ResponseBody
-    public Result updateAward(@Valid @RequestBody Award award,HttpServletRequest request) {
+    public Result updateAward(@Valid @RequestBody Award award, HttpServletRequest request) {
         try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");
@@ -182,23 +180,24 @@ public class AwardController {
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String token_mid = decodedJWT.getClaim("mid").asString();
 
-            if(token_mid!=null&&token_mid.equals(awardService.getAward(award.getAid()).getMid())){
+            if (token_mid != null && token_mid.equals(awardService.getAward(award.getAid()).getMid())) {
                 award.setMid(token_mid);
-                if(awardService.updateAward(award)){
+                if (awardService.updateAward(award)) {
                     return ResultFactory.buildSuccessResult("已成功修改奖品");
                 }
-            }else if(null!=decodedJWT.getClaim("managerID").asString()){
+            } else if (null != decodedJWT.getClaim("managerID").asString()) {
                 award.setMid(null);
-                if(awardService.updateAward(award)){
+                if (awardService.updateAward(award)) {
                     return ResultFactory.buildSuccessResult("已成功修改奖品");
                 }
             }
             return ResultFactory.buildFailResult("修改失败！");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("出现异常！");
         }
     }
+
     /*
      * 请求方式：post
      * 功能：删除指定奖品(商户端和管理员端共用,商户只能删除其上传的奖品)
@@ -209,24 +208,24 @@ public class AwardController {
     @CrossOrigin
     @PostMapping(value = "/award/deleteAward")
     @ResponseBody
-    public Result deleteAward(@Valid String aid,HttpServletRequest request) {
+    public Result deleteAward(@Valid String aid, HttpServletRequest request) {
         try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");
             // 根据token解析出mid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String token_mid = decodedJWT.getClaim("mid").asString();
-            if(token_mid!=null&&token_mid.equals(awardService.getAward(aid).getMid())){
-                if(awardService.deleteAward(aid)){
+            if (token_mid != null && token_mid.equals(awardService.getAward(aid).getMid())) {
+                if (awardService.deleteAward(aid)) {
                     return ResultFactory.buildSuccessResult("已成功删除奖品");
                 }
-            }else if(null!=decodedJWT.getClaim("managerID").asString()){
-                if(awardService.deleteAward(aid)){
+            } else if (null != decodedJWT.getClaim("managerID").asString()) {
+                if (awardService.deleteAward(aid)) {
                     return ResultFactory.buildSuccessResult("已成功删除奖品");
                 }
             }
             return ResultFactory.buildFailResult("删除失败！");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("出现异常！");
         }

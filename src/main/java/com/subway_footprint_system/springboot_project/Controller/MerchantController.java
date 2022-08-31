@@ -2,7 +2,9 @@ package com.subway_footprint_system.springboot_project.Controller;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
-import com.subway_footprint_system.springboot_project.Pojo.*;
+import com.subway_footprint_system.springboot_project.Pojo.Merchant;
+import com.subway_footprint_system.springboot_project.Pojo.MerchantVo;
+import com.subway_footprint_system.springboot_project.Pojo.Result;
 import com.subway_footprint_system.springboot_project.Service.Impl.EMailServiceImpl;
 import com.subway_footprint_system.springboot_project.Service.Impl.MerchantServiceImpl;
 import com.subway_footprint_system.springboot_project.Utils.FtpUtil;
@@ -28,6 +30,7 @@ public class MerchantController {
     private EMailServiceImpl eMailService;
     @Autowired
     private FtpUtil ftpUtil;
+
     /*
      * 请求方式：post
      * 功能：登录
@@ -39,7 +42,7 @@ public class MerchantController {
     @RequestMapping(value = "/merchant/login", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
     @ResponseBody
     public Result login(@Valid @RequestBody MerchantVo merchantVo, BindingResult bindingResult) throws ParseException {
-        if (merchantVo.getAccount().equals("")||merchantVo.getPassword().equals("")) {
+        if (merchantVo.getAccount().equals("") || merchantVo.getPassword().equals("")) {
             String message = String.format("账号或密码不能为空！");
             return ResultFactory.buildFailResult(message);
         }
@@ -47,7 +50,7 @@ public class MerchantController {
             String message = String.format("登陆失败，详细信息[%s]。", bindingResult.getFieldError().getDefaultMessage());
             return ResultFactory.buildFailResult(message);
         }
-        String mid=null;
+        String mid = null;
         if (!merchantService.judgeByAccount(merchantVo)) {
             //账号不存在，判断是否为Emial登录用户
             merchantVo.setEmail(merchantVo.getAccount());
@@ -55,16 +58,16 @@ public class MerchantController {
                 String message = String.format("登陆失败，账号/密码信息不正确。");
                 return ResultFactory.buildFailResult(message);
             }
-            Merchant merchant=merchantService.getMerchantByEmail(merchantVo.getEmail());
-            mid=merchant.getMid();
-        }else{
-            mid=merchantService.getMerchantByAccount(merchantVo.getAccount()).getMid();
+            Merchant merchant = merchantService.getMerchantByEmail(merchantVo.getEmail());
+            mid = merchant.getMid();
+        } else {
+            mid = merchantService.getMerchantByAccount(merchantVo.getAccount()).getMid();
         }
         merchantService.checkAuthentication(mid);
         //已注册
         Map<String, String> map = new HashMap<>(); //用来存放payload信息
-        map.put("mid",mid);
-        map.put("email",merchantVo.getEmail());
+        map.put("mid", mid);
+        map.put("email", merchantVo.getEmail());
         // 生成token令牌
         String token = JWTUtil.generateToken(map);
         return ResultFactory.buildSuccessResult(token);
@@ -80,7 +83,7 @@ public class MerchantController {
     @CrossOrigin
     @PostMapping(value = "/merchant/sendRegistEmail")
     @ResponseBody
-    public Result sendRegistEmail(@Valid @RequestBody MerchantVo merchantVo , HttpSession httpSession ) {
+    public Result sendRegistEmail(@Valid @RequestBody MerchantVo merchantVo, HttpSession httpSession) {
         /*
          * 使用HttpSession在服务器与浏览器建立对话，以验证邮箱验证码
          * */
@@ -118,8 +121,8 @@ public class MerchantController {
     @CrossOrigin
     @PostMapping(value = "/merchant/findPassword")
     @ResponseBody
-    public Result findPassWord(@Valid @RequestBody MerchantVo merchantVo){
-        if(!eMailService.findPassword_sendEmail_merchant(merchantVo.getEmail())){
+    public Result findPassWord(@Valid @RequestBody MerchantVo merchantVo) {
+        if (!eMailService.findPassword_sendEmail_merchant(merchantVo.getEmail())) {
             return ResultFactory.buildFailResult("此邮箱非您注册时使用的邮箱,找回失败！");
         }
         return ResultFactory.buildSuccessResult("找回成功,密码已发送至您的邮箱！");
@@ -135,12 +138,13 @@ public class MerchantController {
     @CrossOrigin
     @PostMapping(value = "/merchant/changePassword")
     @ResponseBody
-    public Result changePassword(@Valid @RequestBody MerchantVo merchantVo){
-        if(!eMailService.changePassword_merchant(merchantVo)){
+    public Result changePassword(@Valid @RequestBody MerchantVo merchantVo) {
+        if (!eMailService.changePassword_merchant(merchantVo)) {
             return ResultFactory.buildFailResult("信息有误,修改失败！");
         }
         return ResultFactory.buildSuccessResult("修改密码成功！");
     }
+
     /*
      * 请求方式：post
      * 功能：获取商户信息
@@ -149,7 +153,7 @@ public class MerchantController {
      * 返回值(json--Result) code,message,data(User)一个完整的Merchant类实例
      * */
     @CrossOrigin
-    @PostMapping(value ="/merchant/getMerchant")
+    @PostMapping(value = "/merchant/getMerchant")
     @ResponseBody
     public Result getMerchant(HttpServletRequest request) {
         try {
@@ -159,11 +163,12 @@ public class MerchantController {
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String mid = decodedJWT.getClaim("mid").asString();
             return ResultFactory.buildSuccessResult(merchantService.getMerchantByMid(mid));
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("出现异常！");
         }
     }
+
     /*
      * 请求方式：post
      * 功能：修改商户信息（不包含修改商户mid、密码、和邮箱及认证信息）
@@ -172,9 +177,9 @@ public class MerchantController {
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
-    @PostMapping(value ="/merchant/updateMerchant")
+    @PostMapping(value = "/merchant/updateMerchant")
     @ResponseBody
-    public Result updateMerchant(HttpServletRequest request,@Valid @RequestBody MerchantVo merchantVo){
+    public Result updateMerchant(HttpServletRequest request, @Valid @RequestBody MerchantVo merchantVo) {
         try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");
@@ -186,12 +191,13 @@ public class MerchantController {
                 return ResultFactory.buildSuccessResult("已成功修改信息！");
             }
             return ResultFactory.buildFailResult("更改信息失败！");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("出现异常！");
         }
 
     }
+
     /*
      * 请求方式：post
      * 功能：商户提交认证信息
@@ -200,17 +206,17 @@ public class MerchantController {
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
-    @PostMapping(value ="/merchant/submitAuthentication")
+    @PostMapping(value = "/merchant/submitAuthentication")
     @ResponseBody
-    public Result submitAuthentication(HttpServletRequest request,String authentication){
+    public Result submitAuthentication(HttpServletRequest request, String authentication) {
         try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");
             // 根据token解析出mid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String mid = decodedJWT.getClaim("mid").asString();
-            if(null!=mid&&ftpUtil.isImage(ftpUtil.getFileExtention(authentication))){
-                Merchant merchant=new Merchant();
+            if (null != mid && ftpUtil.isImage(ftpUtil.getFileExtention(authentication))) {
+                Merchant merchant = new Merchant();
                 merchant.setMid(mid);
                 merchant.setAuthentication(authentication);
                 if (merchantService.submitAuthentication(merchant)) {
@@ -218,7 +224,7 @@ public class MerchantController {
                 }
             }
             return ResultFactory.buildFailResult("提交认证信息失败！");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("出现异常！");
         }

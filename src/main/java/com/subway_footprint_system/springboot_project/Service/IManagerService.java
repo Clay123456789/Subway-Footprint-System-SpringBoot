@@ -8,10 +8,12 @@ import java.util.List;
 public interface IManagerService {
 
     Manager getManagerByManagerId(String managerID);
+
     Manager getManagerByAccount(String account);
 
     //获取所有注册的商户
     List<Merchant> getAllMerchants();
+
     //获取认证中的商户
     List<Merchant> getAllUnAuthenticatedMerchants();
 

@@ -20,12 +20,12 @@ public class LightedStationServiceImpl implements ILightedStationService {
 
     @Override
     public boolean deleteLightedStation(String uid, String pid) {
-        return lightedStationDao.deleteLightedStation(uid,pid);
+        return lightedStationDao.deleteLightedStation(uid, pid);
     }
 
     @Override
     public LightedStation getLightedStation(String uid, String pid) {
-        return lightedStationDao.getLightedStation(uid,pid);
+        return lightedStationDao.getLightedStation(uid, pid);
     }
 
     @Override

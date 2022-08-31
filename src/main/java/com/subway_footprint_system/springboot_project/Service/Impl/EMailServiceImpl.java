@@ -33,7 +33,7 @@ public class EMailServiceImpl implements IEMailService {
      * 随机生成6位数的验证码
      */
     @Override
-    public String randomCode(){
+    public String randomCode() {
         StringBuilder str = new StringBuilder();
         Random random = new Random();
         for (int i = 0; i < 6; i++) {
@@ -50,7 +50,7 @@ public class EMailServiceImpl implements IEMailService {
     public boolean sendRegistEmail_user(String email, HttpSession session) {
 
         //该邮箱已经注册
-        if(userService.getUserByEmail(email)!=null){
+        if (userService.getUserByEmail(email) != null) {
             return false;
         }
         try {
@@ -58,20 +58,20 @@ public class EMailServiceImpl implements IEMailService {
             mailMessage.setSubject("验证码邮件");//主题
             //生成随机数
             String code = randomCode();
-            this.httpSession_user =session;
+            this.httpSession_user = session;
             //将随机数放置到session中
-            httpSession_user.setAttribute("email",email);
-            httpSession_user.setAttribute("code",code);
+            httpSession_user.setAttribute("email", email);
+            httpSession_user.setAttribute("code", code);
 
-            mailMessage.setText("[地铁足迹]验证码"+code+"，用于普通用户注册。泄露有风险，如非本人操作，请忽略本条信息。");//内容
+            mailMessage.setText("[地铁足迹]验证码" + code + "，用于普通用户注册。泄露有风险，如非本人操作，请忽略本条信息。");//内容
 
             mailMessage.setTo(email);//发给谁
 
             mailMessage.setFrom(from);//服务器邮箱
 
             mailSender.send(mailMessage);//发送
-            return  true;
-        }catch (Exception e){
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -82,7 +82,7 @@ public class EMailServiceImpl implements IEMailService {
      * 检验普通用户注册时验证码是否一致
      */
     @Override
-    public boolean registered_user(UserVo userVo){
+    public boolean registered_user(UserVo userVo) {
         //获取session中的验证信息
         String email = (String) httpSession_user.getAttribute("email");
         String code = (String) httpSession_user.getAttribute("code");
@@ -91,21 +91,21 @@ public class EMailServiceImpl implements IEMailService {
         String voCode = userVo.getCode();
 
         //如果email数据为空，或者不一致，注册失败
-        if (email == null || email.isEmpty()||!email.equals(userVo.getEmail())){
+        if (email == null || email.isEmpty() || !email.equals(userVo.getEmail())) {
             //return "error,请重新注册";
             return false;
-        }else if (!code.equals(voCode)){
+        } else if (!code.equals(voCode)) {
             //return "error,请重新注册";
             return false;
         }
 
         //将邮箱作为uid和默认用户名
         userVo.setUid(userVo.getEmail());
-        if(null==userVo.getUsername()){
+        if (null == userVo.getUsername()) {
             userVo.setUsername(userVo.getEmail());
         }
         //如果用户名或邮箱已存在，注册失败
-        if(null!=userService.getUserByEmail(email)||null!=userService.getUserByUsername(userVo.getUsername())){
+        if (null != userService.getUserByEmail(email) || null != userService.getUserByUsername(userVo.getUsername())) {
             return false;
         }
         //将数据写入数据库
@@ -116,62 +116,61 @@ public class EMailServiceImpl implements IEMailService {
     }
 
     /**
-     *普通用户端发送找回密码邮件
+     * 普通用户端发送找回密码邮件
      */
     @Override
     public boolean findPassword_sendEmail_user(String email) {
-        if(userService.getUserByEmail(email)!=null){
+        if (userService.getUserByEmail(email) != null) {
             try {
                 SimpleMailMessage mailMessage = new SimpleMailMessage();
                 mailMessage.setSubject("找回密码邮件");//主题
                 //保存密码
-                String password=userService.getUserByEmail(email).getPassword();
-                mailMessage.setText("[地铁足迹]您的密码是："+ password+"。阅读后建议删除本邮件。请确认是否本人操作，注意账号安全。");
+                String password = userService.getUserByEmail(email).getPassword();
+                mailMessage.setText("[地铁足迹]您的密码是：" + password + "。阅读后建议删除本邮件。请确认是否本人操作，注意账号安全。");
 
                 mailMessage.setTo(email);//发给谁
 
                 mailMessage.setFrom(from);//服务器邮箱
 
                 mailSender.send(mailMessage);//发送
-                return  true;
-            }catch (Exception e){
+                return true;
+            } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
-        }
-        else
+        } else
             return false;
     }
 
     /**
-     *普通用户端发送更改密码邮件
+     * 普通用户端发送更改密码邮件
      */
     @Override
     public boolean changePassword_user(UserVo userVo) {
-         if(userService.updatePassword(userVo)){
-                SimpleMailMessage mailMessage = new SimpleMailMessage();
-                mailMessage.setSubject("修改密码邮件");//主题
-                //保存密码
-                String password=userService.getUserByEmail(userVo.getEmail()).getPassword();
-                mailMessage.setText("[地铁足迹]您的密码已修改，请确认是否本人操作，注意账号安全。");
+        if (userService.updatePassword(userVo)) {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setSubject("修改密码邮件");//主题
+            //保存密码
+            String password = userService.getUserByEmail(userVo.getEmail()).getPassword();
+            mailMessage.setText("[地铁足迹]您的密码已修改，请确认是否本人操作，注意账号安全。");
 
-                mailMessage.setTo(userVo.getEmail());//发给谁
+            mailMessage.setTo(userVo.getEmail());//发给谁
 
-                mailMessage.setFrom(from);//服务器邮箱
+            mailMessage.setFrom(from);//服务器邮箱
 
-                mailSender.send(mailMessage);//发送
-                return true;
-            }
-            else
-                return false;
+            mailSender.send(mailMessage);//发送
+            return true;
+        } else
+            return false;
     }
+
     /**
      * 给商户端输入的邮箱，发送验证码
      */
     @Override
     public boolean sendRegistEmail_merchant(String email, HttpSession session) {
         //该邮箱已经注册
-        if(merchantService.getMerchantByEmail(email)!=null){
+        if (merchantService.getMerchantByEmail(email) != null) {
             return false;
         }
         try {
@@ -179,12 +178,12 @@ public class EMailServiceImpl implements IEMailService {
             mailMessage.setSubject("验证码邮件");//主题
             //生成随机数
             String code = randomCode();
-            this.httpSession_merchant=session;
+            this.httpSession_merchant = session;
             //将随机数放置到session中
-            httpSession_merchant.setAttribute("email",email);
-            httpSession_merchant.setAttribute("code",code);
+            httpSession_merchant.setAttribute("email", email);
+            httpSession_merchant.setAttribute("code", code);
 
-            mailMessage.setText("[地铁足迹]验证码"+code+"，用于商户端注册。泄露有风险，如非本人操作，请忽略本条信息。");//内容
+            mailMessage.setText("[地铁足迹]验证码" + code + "，用于商户端注册。泄露有风险，如非本人操作，请忽略本条信息。");//内容
 
             mailMessage.setTo(email);//发给谁
 
@@ -192,7 +191,7 @@ public class EMailServiceImpl implements IEMailService {
 
             mailSender.send(mailMessage);//发送
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -211,21 +210,21 @@ public class EMailServiceImpl implements IEMailService {
         String voCode = merchantVo.getCode();
 
         //如果email数据为空，或者不一致，注册失败
-        if (email == null || email.isEmpty()||!email.equals(merchantVo.getEmail())){
+        if (email == null || email.isEmpty() || !email.equals(merchantVo.getEmail())) {
             //return "error,请重新注册";
             return false;
-        }else if (!code.equals(voCode)){
+        } else if (!code.equals(voCode)) {
             //return "error,请重新注册";
             return false;
         }
 
         //将邮箱作为mid和默认账号
         merchantVo.setMid(merchantVo.getEmail());
-        if(null==merchantVo.getAccount()){
+        if (null == merchantVo.getAccount()) {
             merchantVo.setAccount(merchantVo.getEmail());
         }
         //如果用户名或邮箱已存在，注册失败
-        if(null!=merchantService.getMerchantByEmail(email)||null!=merchantService.getMerchantByAccount(merchantVo.getAccount())){
+        if (null != merchantService.getMerchantByEmail(email) || null != merchantService.getMerchantByAccount(merchantVo.getAccount())) {
             return false;
         }
         //将数据写入数据库
@@ -240,39 +239,38 @@ public class EMailServiceImpl implements IEMailService {
      */
     @Override
     public boolean findPassword_sendEmail_merchant(String email) {
-        if(merchantService.getMerchantByEmail(email)!=null){
+        if (merchantService.getMerchantByEmail(email) != null) {
             try {
                 SimpleMailMessage mailMessage = new SimpleMailMessage();
                 mailMessage.setSubject("找回密码邮件");//主题
                 //保存密码
-                String password=merchantService.getMerchantByEmail(email).getPassword();
-                mailMessage.setText("[地铁足迹]您的密码是："+ password+"。阅读后建议删除本邮件。请确认是否本人操作，注意账号安全。");
+                String password = merchantService.getMerchantByEmail(email).getPassword();
+                mailMessage.setText("[地铁足迹]您的密码是：" + password + "。阅读后建议删除本邮件。请确认是否本人操作，注意账号安全。");
 
                 mailMessage.setTo(email);//发给谁
 
                 mailMessage.setFrom(from);//服务器邮箱
 
                 mailSender.send(mailMessage);//发送
-                return  true;
-            }catch (Exception e){
+                return true;
+            } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
-        }
-        else
+        } else
             return false;
     }
 
     /**
-    * 商户端发送修改密码邮件
-    */
+     * 商户端发送修改密码邮件
+     */
     @Override
     public boolean changePassword_merchant(MerchantVo merchantVo) {
-        if(merchantService.updatePassword(merchantVo)){
+        if (merchantService.updatePassword(merchantVo)) {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setSubject("修改密码邮件");//主题
             //保存密码
-            String password=merchantService.getMerchantByEmail(merchantVo.getEmail()).getPassword();
+            String password = merchantService.getMerchantByEmail(merchantVo.getEmail()).getPassword();
             mailMessage.setText("[地铁足迹]您的密码已修改，请确认是否本人操作，注意账号安全。");
 
             mailMessage.setTo(merchantVo.getEmail());//发给谁
@@ -281,8 +279,7 @@ public class EMailServiceImpl implements IEMailService {
 
             mailSender.send(mailMessage);//发送
             return true;
-        }
-        else
+        } else
             return false;
     }
 

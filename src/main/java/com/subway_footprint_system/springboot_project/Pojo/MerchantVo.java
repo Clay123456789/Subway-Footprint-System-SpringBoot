@@ -15,8 +15,8 @@ public class MerchantVo extends Merchant {
 
     //重新构造一个builder，以免和父类冲突
     @Builder(builderMethodName = "childBuilder")
-    public MerchantVo(String mid, String account, String name, String password, String email, String tel,String location,String authentication,int authenticated, String time,String info,String code, String newEmail, String newPassword) {
-        super(mid, account, name, password, email, tel,location,authentication,authenticated,time, info);
+    public MerchantVo(String mid, String account, String name, String password, String email, String tel, String location, String authentication, int authenticated, String time, String info, String code, String newEmail, String newPassword) {
+        super(mid, account, name, password, email, tel, location, authentication, authenticated, time, info);
         this.code = code;
         this.newEmail = newEmail;
         this.newPassword = newPassword;

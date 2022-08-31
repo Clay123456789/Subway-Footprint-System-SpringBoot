@@ -16,6 +16,7 @@ public class ManagerDaoImpl implements IManagerDao {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private StringEncryptor encryptor;
+
     @Override
     public Manager getManagerByManagerId(String managerID) {
         RowMapper<Manager> rowMapper = new BeanPropertyRowMapper<Manager>(Manager.class);
@@ -23,12 +24,12 @@ public class ManagerDaoImpl implements IManagerDao {
         //queryForObject会抛出非检查性异常DataAccessException，同时对返回值进行requiredSingleResult操作
         //requiredSingleResult会在查询结果为空的时候抛出EmptyResultDataAccessException异常，需要捕获后进行处理
         try {
-            object = jdbcTemplate.queryForObject("select * from manager where managerID = ?",rowMapper,managerID);
+            object = jdbcTemplate.queryForObject("select * from manager where managerID = ?", rowMapper, managerID);
         } catch (EmptyResultDataAccessException e1) {
             //查询结果为空，返回null
             return null;
         }
-        Manager manager=(Manager)object;
+        Manager manager = (Manager) object;
         manager.setPassword(encryptor.decrypt(manager.getPassword()));
         return manager;
     }
@@ -40,12 +41,12 @@ public class ManagerDaoImpl implements IManagerDao {
         //queryForObject会抛出非检查性异常DataAccessException，同时对返回值进行requiredSingleResult操作
         //requiredSingleResult会在查询结果为空的时候抛出EmptyResultDataAccessException异常，需要捕获后进行处理
         try {
-            object = jdbcTemplate.queryForObject("select * from manager where account = ?",rowMapper,account);
+            object = jdbcTemplate.queryForObject("select * from manager where account = ?", rowMapper, account);
         } catch (EmptyResultDataAccessException e1) {
             //查询结果为空，返回null
             return null;
         }
-        Manager manager=(Manager)object;
+        Manager manager = (Manager) object;
         manager.setPassword(encryptor.decrypt(manager.getPassword()));
         return manager;
     }

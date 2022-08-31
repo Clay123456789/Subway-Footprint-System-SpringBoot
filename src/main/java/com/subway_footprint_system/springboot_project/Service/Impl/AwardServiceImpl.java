@@ -25,7 +25,7 @@ public class AwardServiceImpl implements IAwardService {
 
     @Override
     public boolean updateAward(Award award) {
-        if(null!=getAward(award.getAid()))
+        if (null != getAward(award.getAid()))
             return awardDao.updateAward(award);
         return false;
     }
