@@ -11,6 +11,9 @@ public interface IAwardRecordService {
     //增加商户藏宝记录
     boolean addMerchantBuryAwardRecord(String aid, String mid, int num, int credit);
 
+    //查找购物车中是否已有该奖品,有则返回该记录
+    AwardRecord isExistShoppingAwardRecord(String aid, String uid);
+
     //增加奖品进购物车
     boolean insertShoppingAwardRecord(String aid, String uid, int num);
 

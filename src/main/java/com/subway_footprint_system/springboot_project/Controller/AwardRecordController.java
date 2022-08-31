@@ -8,10 +8,7 @@ import com.subway_footprint_system.springboot_project.Service.Impl.AwardRecordSe
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -138,26 +135,30 @@ public class AwardRecordController {
      * 请求方式：post
      * 功能：从购物车奖品创建订单
      * 路径 /user/createOrderAwardRecordByShopping
-     * 传参(json) arid
+     * 传参(json) List<String> arids
      * 返回值 (json--Result) code,message,data(str)
      * */
     @CrossOrigin
     @PostMapping(value = "/user/createOrderAwardRecordByShopping")
     @ResponseBody
-    public Result createOrderAwardRecordByShopping(HttpServletRequest request, String arid) {
+    public Result createOrderAwardRecordByShopping(HttpServletRequest request, @RequestBody List<String> arids) {
         try {
             //获取请求头中的token令牌
             String token = request.getHeader("token");
             // 根据token解析出uid;
             DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
             String uid = decodedJWT.getClaim("uid").asString();
-            AwardRecord awardRecord = awardRecordService.getShoppingAwardRecord(arid);
-            if (null != uid && null != awardRecord && uid.equals(awardRecord.getUid())) {
-                if (awardRecordService.createOrderAwardRecordByShopping(arid)) {
-                    return ResultFactory.buildSuccessResult("成功创建订单！");
+            for (int i = 0; i < arids.size(); i++) {
+                String arid = arids.get(i);
+                AwardRecord awardRecord = awardRecordService.getShoppingAwardRecord(arid);
+                if (null == uid || null == awardRecord || !uid.equals(awardRecord.getUid())) {
+                    return ResultFactory.buildFailResult("信息错误，部分订单创建失败！");
+                }
+                if (!awardRecordService.createOrderAwardRecordByShopping(arid)) {
+                    return ResultFactory.buildFailResult("部分订单创建失败！");
                 }
             }
-            return ResultFactory.buildFailResult("创建订单失败！");
+            return ResultFactory.buildSuccessResult("成功创建订单！");
         } catch (Exception e) {
             e.printStackTrace();
             return ResultFactory.buildFailResult("出现异常！");

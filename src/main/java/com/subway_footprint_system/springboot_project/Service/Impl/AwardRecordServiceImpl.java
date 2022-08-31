@@ -71,16 +71,30 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
     }
 
     @Override
+    public AwardRecord isExistShoppingAwardRecord(String aid, String uid) {
+        return awardRecordDao.isExistShoppingAwardRecord(aid, uid);
+    }
+
+    @Override
     public boolean insertShoppingAwardRecord(String aid, String uid, int num) {
-        Award award = awardDao.getAward(aid);
-        if (null == award || null == userDao.getUserByUid(uid) || 0 != award.getStatus()) {
-            return false;
+        //查找购物车中是否已有该奖品
+        AwardRecord awardRecord = isExistShoppingAwardRecord(aid, uid);
+        if (null != awardRecord) {//有
+            awardRecord.setNum(awardRecord.getNum() + 1);
+            awardRecord.setTime(JWTUtil.getNowTime());
+            return awardRecordDao.updateMysqlAwardRecord(awardRecord);
+        } else {//无
+            Award award = awardDao.getAward(aid);
+            if (null == award || null == userDao.getUserByUid(uid) || 0 != award.getStatus()) {
+                return false;
+            }
+            String time = JWTUtil.getNowTime();
+            String mid = award.getMid();
+            int credit = num * award.getCredit();
+            AwardRecord awardRecord2 = new AwardRecord(uid + "-" + aid + "-" + time, -1, uid, mid, aid, num, time, credit);
+            return awardRecordDao.insertMysqlAwardRecord(awardRecord2);
         }
-        String time = JWTUtil.getNowTime();
-        String mid = award.getMid();
-        int credit = num * award.getCredit();
-        AwardRecord awardRecord = new AwardRecord(uid + "-" + aid + "-" + time, -1, uid, mid, aid, num, time, credit);
-        return awardRecordDao.insertMysqlAwardRecord(awardRecord);
+
     }
 
     @Override
@@ -91,8 +105,8 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
     @Override
     public boolean deleteOrderAwardRecord(String arid) {
         AwardRecord awardRecord = awardRecordDao.getMysqlAwardRecord(arid, 99);
-        //只能删除状态为1,3,4的订单
-        if (null != awardRecord && (1 == awardRecord.getOperation() || 3 == awardRecord.getOperation() || 4 == awardRecord.getOperation())) {
+        //只能删除状态为3,4的订单
+        if (null != awardRecord && (3 == awardRecord.getOperation() || 4 == awardRecord.getOperation())) {
             return awardRecordDao.deleteMysqlAwardRecord(arid);
         }
         return false;
@@ -204,7 +218,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
 
     @Override
     public boolean expireOrder(String arid) {
-        AwardRecord awardRecord = awardRecordDao.getRedisAwardRecord(arid);
+        AwardRecord awardRecord = awardRecordDao.getMysqlAwardRecord(arid, 2);
         Award award = awardDao.getAward(awardRecord.getAid());
         if (null == award) {
             return false;
@@ -215,7 +229,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
             award.setStatus(0);
         }
         //数据库状态变“订单超时”
-        awardRecord.setOperation(3);
+        awardRecord.setOperation(4);
         awardRecordDao.updateMysqlAwardRecord(awardRecord);
         return true;
     }

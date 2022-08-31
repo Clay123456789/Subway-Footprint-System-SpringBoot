@@ -144,5 +144,22 @@ public class AwardRecordDaoImpl implements IAwardRecordDao {
         return list;
     }
 
+    @Override
+    public AwardRecord isExistShoppingAwardRecord(String aid, String uid) {
+        String sql = "select * from award_record where aid= ?and uid=?and operation=-1";
+        RowMapper<AwardRecord> rowMapper = new BeanPropertyRowMapper<AwardRecord>(AwardRecord.class);
+        Object object = null;
+        //queryForObject会抛出非检查性异常DataAccessException，同时对返回值进行requiredSingleResult操作
+        //requiredSingleResult会在查询结果为空的时候抛出EmptyResultDataAccessException异常，需要捕获后进行处理
+        try {
+            object = jdbcTemplate.queryForObject(sql, rowMapper, aid, uid);
+        } catch (EmptyResultDataAccessException e1) {
+            //查询结果为空，返回null
+            return null;
+        }
+        return (AwardRecord) object;
+
+    }
+
 
 }

@@ -37,4 +37,6 @@ public interface IAwardRecordDao {
     List<AwardRecord> getAwardRecords(int operation, String uid, int group);
 
 
+    AwardRecord isExistShoppingAwardRecord(String aid, String uid);
+
 }
