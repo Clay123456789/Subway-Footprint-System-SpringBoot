@@ -1,6 +1,5 @@
 package com.subway_footprint_system.springboot_project.Utils;
 
-import com.google.gson.Gson;
 import com.subway_footprint_system.springboot_project.Pojo.AwardRecord;
 import com.subway_footprint_system.springboot_project.Service.Impl.AwardRecordServiceImpl;
 import org.slf4j.Logger;
@@ -33,10 +32,14 @@ class RedisKeyExpirationListener extends KeyExpirationEventMessageListener {
         // 用户做自己的业务处理即可,注意message.toString()可以获取失效的key
         String expiredKey = message.toString();
         try {
-            AwardRecord awardRecord = new Gson().fromJson(expiredKey, AwardRecord.class);
-            if (null != awardRecord) {//订单失效
-                logger.info("用户" + awardRecord.getUid() + "商品订单" + awardRecord.getArid() + "过期，商品" + awardRecord.getAid() + "释放");
-                awardRecordService.expireOrder(awardRecord.getArid());
+            if (expiredKey.contains("awardRecord_")) {
+                int index = expiredKey.indexOf("awardRecord_");
+                String arid = expiredKey.substring(index + 12);
+                AwardRecord awardRecord = awardRecordService.getAnyAwardRecord(arid);
+                if (null != awardRecord) {//订单失效
+                    logger.info("用户" + awardRecord.getUid() + "商品订单" + awardRecord.getArid() + "过期，商品" + awardRecord.getAid() + "释放");
+                    awardRecordService.expireOrder(awardRecord.getArid());
+                }
             }
         } catch (Exception ignored) {
 
