@@ -21,4 +21,11 @@ public interface ITreasureService {
     List<Treasure> getUserTreasures(String uid);
 
     List<Treasure> getMerchantTreasures(String mid);
+
+    //修改地铁宝箱概率
+    boolean changePositionTreasureProbability(String pid, float probability);
+
+    //获取地铁宝箱概率
+    float getPositionTreasureProbability(String pid);
+
 }

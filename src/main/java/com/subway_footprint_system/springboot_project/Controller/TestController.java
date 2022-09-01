@@ -88,7 +88,8 @@ public class TestController {
     /*
      * 扫描二维码触发接口
      * */
-    @GetMapping("/scanSuccess/{deliveryCode}")
+    @CrossOrigin
+    @RequestMapping(value = "/scanSuccess/{deliveryCode}", produces = "application/json; charset=UTF-8")
     public String scanSuccess(@PathVariable("deliveryCode") String deliveryCode) throws ParseException {
         int num = deliveryCode.lastIndexOf('_');
         String time = deliveryCode.substring(num + 1);

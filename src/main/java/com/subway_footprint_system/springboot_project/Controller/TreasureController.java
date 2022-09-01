@@ -233,4 +233,50 @@ public class TreasureController {
         }
     }
 
+    /*
+     * 请求方式：post
+     * 功能：修改地铁站宝箱概率
+     * 路径 /treasure/changePositionTreasureProbability
+     * 传参(json) String pid,float probability
+     * 返回值 (json--Result) code,message,data(str)
+     * */
+    @CrossOrigin
+    @PostMapping(value = "/treasure/changePositionTreasureProbability")
+    @ResponseBody
+    public Result changePositionTreasureProbability(HttpServletRequest request, String pid, float probability) {
+        try {
+            //获取请求头中的token令牌
+            String token = request.getHeader("token");
+            // 根据token解析出managerID;
+            DecodedJWT decodedJWT = JWTUtil.getTokenInfo(token);
+            String managerID = decodedJWT.getClaim("managerID").asString();
+            if (null != managerID && treasureService.changePositionTreasureProbability(pid, probability)) {
+                return ResultFactory.buildSuccessResult("修改地铁站宝箱概率成功！");
+            }
+            return ResultFactory.buildFailResult("修改地铁站宝箱概率失败！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultFactory.buildFailResult("出现异常！");
+        }
+    }
+
+
+    /*
+     * 请求方式：post
+     * 功能：获取地铁站宝箱概率
+     * 路径 /treasure/getPositionTreasureProbability
+     * 传参(json) String pid
+     * 返回值 (json--Result) code,message,data(str)
+     * */
+    @CrossOrigin
+    @PostMapping(value = "/treasure/getPositionTreasureProbability")
+    @ResponseBody
+    public Result getPositionTreasureProbability(String pid) {
+        try {
+            return ResultFactory.buildSuccessResult(treasureService.getPositionTreasureProbability(pid));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultFactory.buildFailResult("出现异常！");
+        }
+    }
 }

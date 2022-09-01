@@ -25,6 +25,7 @@ public class MyWebMvcConfigurer implements WebMvcConfigurer {
                 .excludePathPatterns("/treasure/getTreasure")
                 .excludePathPatterns("/treasure/getPositionTreasure")
                 .excludePathPatterns("/treasure/getAllTreasure")
+                .excludePathPatterns("/treasure/getPositionTreasureProbability")
                 .excludePathPatterns("/encrypt")
                 .excludePathPatterns("/decrypt")
                 .excludePathPatterns("/websocket/**")

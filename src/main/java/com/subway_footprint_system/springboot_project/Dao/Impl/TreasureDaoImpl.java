@@ -5,12 +5,15 @@ import com.subway_footprint_system.springboot_project.Dao.ITreasureDao;
 import com.subway_footprint_system.springboot_project.Pojo.Treasure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Repository
 public class TreasureDaoImpl implements ITreasureDao {
@@ -20,6 +23,8 @@ public class TreasureDaoImpl implements ITreasureDao {
      * */
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 添加一行数据
@@ -148,6 +153,37 @@ public class TreasureDaoImpl implements ITreasureDao {
             return null;
         }
         return list;
+    }
+
+    @Override
+    public float getPositionTreasureProbability(String pid) {
+
+        // 从缓存中 取出信息
+        String key = "PositionTreasureProbability_" + pid;
+        Boolean hasKey = redisTemplate.hasKey(key);
+
+        ValueOperations operations = redisTemplate.opsForValue();
+        // 缓存中存在
+        if (hasKey) {
+            return (float) operations.get(key);
+        }
+        return 1;
+    }
+
+    @Override
+    public boolean changePositionTreasureProbability(String pid, float probability) {
+        // 从缓存中 取出信息
+        String key = "PositionTreasureProbability_" + pid;
+        Boolean hasKey = redisTemplate.hasKey(key);
+        ValueOperations operations = redisTemplate.opsForValue();
+        // 缓存中存在，删掉
+        if (hasKey) {
+            redisTemplate.delete(key);
+        }
+        //插入新的
+        operations.set(key, probability, 365, TimeUnit.DAYS);//向redis里存入数据,设置缓存时间为一年
+
+        return true;
     }
 
     /**
