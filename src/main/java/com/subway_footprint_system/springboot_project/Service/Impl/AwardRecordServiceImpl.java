@@ -2,6 +2,7 @@ package com.subway_footprint_system.springboot_project.Service.Impl;
 
 import com.subway_footprint_system.springboot_project.Dao.Impl.AwardDaoImpl;
 import com.subway_footprint_system.springboot_project.Dao.Impl.AwardRecordDaoImpl;
+import com.subway_footprint_system.springboot_project.Dao.Impl.MerchantDaoImpl;
 import com.subway_footprint_system.springboot_project.Dao.Impl.UserDaoImpl;
 import com.subway_footprint_system.springboot_project.Pojo.Award;
 import com.subway_footprint_system.springboot_project.Pojo.AwardRecord;
@@ -22,6 +23,8 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
     private UserDaoImpl userDao;
     @Autowired
     private AwardDaoImpl awardDao;
+    @Autowired
+    private MerchantDaoImpl merchantDao;
 
     @Override
     public boolean addUserBuryAwardRecord(String aid, String uid, int num, int credit) {
@@ -31,7 +34,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
         }
         String time = JWTUtil.getNowTime();
         String mid = award.getMid();
-        AwardRecord awardRecord = new AwardRecord(uid + "-" + aid + "-" + time, 0, uid, mid, aid, num, time, credit);
+        AwardRecord awardRecord = new AwardRecord(uid + "-" + aid + "-" + time, 0, uid, mid, aid, num, time, credit, num);
         //award数量需相应减少
         if (0 == award.getStatus() && award.getNum() >= num) {
             award.setNum(Math.max(award.getNum() - num, 0));
@@ -47,16 +50,52 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
     }
 
     @Override
-    public boolean insertShoppingAwardRecord(String aid, String uid, int num) {
+    public boolean addMerchantBuryAwardRecord(String aid, String mid, int num, int credit) {
         Award award = awardDao.getAward(aid);
-        if (null == award || null == userDao.getUserByUid(uid) || 0 != award.getStatus()) {
+        if (null == award || null == (merchantDao.getMerchantByMid(mid)) || !mid.equals(award.getMid())) {
             return false;
         }
         String time = JWTUtil.getNowTime();
-        String mid = award.getMid();
-        int credit = num * award.getCredit();
-        AwardRecord awardRecord = new AwardRecord(uid + "-" + aid + "-" + time, -1, uid, mid, aid, num, time, credit);
-        return awardRecordDao.insertMysqlAwardRecord(awardRecord);
+        AwardRecord awardRecord = new AwardRecord(mid + "-" + aid + "-" + time, 0, null, mid, aid, num, time, credit, num);
+        //award数量需相应减少
+        if (0 == award.getStatus() && award.getNum() >= num) {
+            award.setNum(Math.max(award.getNum() - num, 0));
+            //若award剩余数量为0，状态改为已售空（2）
+            if (0 == award.getNum()) {
+                award.setStatus(2);
+            }
+            awardDao.updateAward(award);
+            return awardRecordDao.insertMysqlAwardRecord(awardRecord);
+        }
+        return false;
+    }
+
+    @Override
+    public AwardRecord isExistShoppingAwardRecord(String aid, String uid) {
+        return awardRecordDao.isExistShoppingAwardRecord(aid, uid);
+    }
+
+    @Override
+    public boolean insertShoppingAwardRecord(String aid, String uid, int num) {
+        //查找购物车中是否已有该奖品
+        AwardRecord awardRecord = isExistShoppingAwardRecord(aid, uid);
+        if (null != awardRecord) {//有
+            awardRecord.setNum(awardRecord.getNum() + 1);
+            awardRecord.setRemaining_count(awardRecord.getNum());
+            awardRecord.setTime(JWTUtil.getNowTime());
+            return awardRecordDao.updateMysqlAwardRecord(awardRecord);
+        } else {//无
+            Award award = awardDao.getAward(aid);
+            if (null == award || null == userDao.getUserByUid(uid) || 0 != award.getStatus()) {
+                return false;
+            }
+            String time = JWTUtil.getNowTime();
+            String mid = award.getMid();
+            int credit = num * award.getCredit();
+            AwardRecord awardRecord2 = new AwardRecord(uid + "-" + aid + "-" + time, -1, uid, mid, aid, num, time, credit, num);
+            return awardRecordDao.insertMysqlAwardRecord(awardRecord2);
+        }
+
     }
 
     @Override
@@ -67,8 +106,8 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
     @Override
     public boolean deleteOrderAwardRecord(String arid) {
         AwardRecord awardRecord = awardRecordDao.getMysqlAwardRecord(arid, 99);
-        //只能删除状态为1,3,4的订单
-        if (null != awardRecord && (1 == awardRecord.getOperation() || 3 == awardRecord.getOperation() || 4 == awardRecord.getOperation())) {
+        //只能删除状态为3,4的订单
+        if (null != awardRecord && (3 == awardRecord.getOperation() || 4 == awardRecord.getOperation())) {
             return awardRecordDao.deleteMysqlAwardRecord(arid);
         }
         return false;
@@ -121,7 +160,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
         String time = JWTUtil.getNowTime();
         String mid = award.getMid();
         int credit = num * award.getCredit();
-        AwardRecord awardRecord = new AwardRecord(uid + "-" + aid + "-" + time, 2, uid, mid, aid, num, time, credit);
+        AwardRecord awardRecord = new AwardRecord(uid + "-" + aid + "-" + time, 2, uid, mid, aid, num, time, credit, num);
         award.setNum(award.getNum() - awardRecord.getNum());
         //若award剩余数量为0，状态改为已售空（2）
         if (0 == award.getNum()) {
@@ -180,7 +219,7 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
 
     @Override
     public boolean expireOrder(String arid) {
-        AwardRecord awardRecord = awardRecordDao.getRedisAwardRecord(arid);
+        AwardRecord awardRecord = awardRecordDao.getMysqlAwardRecord(arid, 2);
         Award award = awardDao.getAward(awardRecord.getAid());
         if (null == award) {
             return false;
@@ -191,9 +230,19 @@ public class AwardRecordServiceImpl implements IAwardRecordService {
             award.setStatus(0);
         }
         //数据库状态变“订单超时”
-        awardRecord.setOperation(3);
+        awardRecord.setOperation(4);
         awardRecordDao.updateMysqlAwardRecord(awardRecord);
         return true;
+    }
+
+    @Override
+    public boolean useAwardRecord(String arid) {
+        AwardRecord awardRecord = getAnyAwardRecord(arid);
+        if (null != awardRecord && 1 == awardRecord.getOperation() && awardRecord.getRemaining_count() > 0) {
+            awardRecord.setRemaining_count(awardRecord.getRemaining_count() - 1);
+            return awardRecordDao.updateMysqlAwardRecord(awardRecord);
+        }
+        return false;
     }
 
     @Override

@@ -8,6 +8,12 @@ public interface IAwardRecordService {
     //增加用户藏宝记录
     boolean addUserBuryAwardRecord(String aid, String uid, int num, int credit);
 
+    //增加商户藏宝记录
+    boolean addMerchantBuryAwardRecord(String aid, String mid, int num, int credit);
+
+    //查找购物车中是否已有该奖品,有则返回该记录
+    AwardRecord isExistShoppingAwardRecord(String aid, String uid);
+
     //增加奖品进购物车
     boolean insertShoppingAwardRecord(String aid, String uid, int num);
 
@@ -40,6 +46,10 @@ public interface IAwardRecordService {
 
     //订单过期
     boolean expireOrder(String arid);
+
+    //使用奖品
+    boolean useAwardRecord(String arid);
+
 
     //获取用户所有奖品兑换记录
     List<AwardRecord> getExchangeAwardRecords(String uid, int group);

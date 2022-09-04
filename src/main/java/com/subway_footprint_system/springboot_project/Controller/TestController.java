@@ -2,7 +2,10 @@ package com.subway_footprint_system.springboot_project.Controller;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.subway_footprint_system.springboot_project.Dao.Impl.ResultFactory;
+import com.subway_footprint_system.springboot_project.Pojo.AwardRecord;
 import com.subway_footprint_system.springboot_project.Pojo.Result;
+import com.subway_footprint_system.springboot_project.Service.Impl.AwardRecordServiceImpl;
+import com.subway_footprint_system.springboot_project.Service.Impl.AwardServiceImpl;
 import com.subway_footprint_system.springboot_project.Utils.JWTUtil;
 import com.subway_footprint_system.springboot_project.Utils.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +33,10 @@ public class TestController {
     private StringEncryptor encryptor;
     @Resource
     private WebSocketServer webSocketServer;
+    @Autowired
+    private AwardRecordServiceImpl awardRecordService;
+    @Autowired
+    private AwardServiceImpl awardService;
 
 
     @CrossOrigin
@@ -76,12 +85,26 @@ public class TestController {
         return ResultFactory.buildSuccessResult(encryptor.decrypt(str));
     }
 
-    @GetMapping("/scanSuccess/{deliveryCode}")
-    public String scanSuccess(@PathVariable("deliveryCode") String deliveryCode) {
-        //
-        webSocketServer.sendOneMessage(deliveryCode, "成功");
-        return "success";
+    /*
+     * 扫描二维码触发接口
+     * */
+    @CrossOrigin
+    @RequestMapping(value = "/scanSuccess/{deliveryCode}", produces = "application/json; charset=UTF-8")
+    public String scanSuccess(@PathVariable("deliveryCode") String deliveryCode) throws ParseException {
+        int num = deliveryCode.lastIndexOf('_');
+        String time = deliveryCode.substring(num + 1);
+        String arid = deliveryCode.substring(0, num);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日HH:mm:ss");
+        long sub = formatter.parse(JWTUtil.getNowTime()).getTime() - Long.parseLong(time);
+        if (sub > 5000) {
+            return "二维码已过期";
+        }
+        //有效期以内
+        if (awardRecordService.useAwardRecord(arid)) {//使用成功
+            AwardRecord awardRecord = awardRecordService.getAnyAwardRecord(arid);
+            webSocketServer.sendOneMessage(deliveryCode, "成功");
+            return "成功使用：" + awardService.getAward(awardRecord.getAid()).getName();
+        }
+        return "错误的二维码";
     }
-
-
 }

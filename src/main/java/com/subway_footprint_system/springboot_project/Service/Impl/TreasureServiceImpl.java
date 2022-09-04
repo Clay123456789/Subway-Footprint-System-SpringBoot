@@ -36,17 +36,34 @@ public class TreasureServiceImpl implements ITreasureService {
     }
 
     @Override
-    public List<Treasure> getPositionTreasure(String pid) {
-        return treasureDao.getPositionTreasure(pid);
+    public List<Treasure> getPositionTreasures(String pid) {
+        return treasureDao.getPositionTreasures(pid);
     }
 
     @Override
-    public List<Treasure> getAllTreasure() {
-        return treasureDao.getAllTreasure();
+    public List<Treasure> getAllTreasures() {
+        return treasureDao.getAllTreasures();
     }
 
     @Override
-    public List<Treasure> getUserTreasure(String uid2) {
-        return treasureDao.getUserTreasure(uid2);
+    public List<Treasure> getUserTreasures(String uid2) {
+        return treasureDao.getUserTreasures(uid2);
     }
+
+    @Override
+    public List<Treasure> getMerchantTreasures(String mid) {
+        return treasureDao.getMerchantTreasures(mid);
+    }
+
+    @Override
+    public boolean changePositionTreasureProbability(String pid, float probability) {
+
+        return treasureDao.changePositionTreasureProbability(pid, probability);
+    }
+
+    @Override
+    public float getPositionTreasureProbability(String pid) {
+        return treasureDao.getPositionTreasureProbability(pid);
+    }
+
 }

@@ -14,9 +14,16 @@ public interface ITreasureDao {
 
     Treasure getTreasure(String tid);
 
-    List<Treasure> getPositionTreasure(String pid);
+    List<Treasure> getPositionTreasures(String pid);
 
-    List<Treasure> getAllTreasure();
+    List<Treasure> getAllTreasures();
 
-    List<Treasure> getUserTreasure(String uid2);
+    List<Treasure> getUserTreasures(String uid2);
+
+    List<Treasure> getMerchantTreasures(String mid);
+
+    float getPositionTreasureProbability(String pid);
+
+    boolean changePositionTreasureProbability(String pid, float probability);
+
 }
